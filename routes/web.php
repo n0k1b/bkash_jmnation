@@ -13,37 +13,20 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::get('/', function () {
-    return view('dashboard');
+// Route::get('/', function () {
+//     return view('dashboard');
+// });
+
+Route::get('login', 'AuthController@index')->name('login-view');
+Route::post('login', 'AuthController@login')->name('login');
+
+Route::group(['middleware' => ['auth']], function () {
+
+    Route::get('/', 'TransactionController@index');
+    Route::post('create_transaction', 'TransactionController@store')->name('create_transaction');
+    Route::get('report', 'TransactionController@report')->name('report');
+    Route::get('logout', 'AuthController@logout')->name('logout');
+    Route::post('get_all_report', 'TransactionController@get_all_report')->name('get_all_report');
+    Route::get('changeStatus', 'TransactionController@changeStatus');
+
 });
-Route::get('transaction', 'TransactionController@index');
-Route::get('logout', 'AuthController@logout')->name('logout');
-Route::get('/courses', 'CourseController@index');
-Route::view('/add-course', 'addCourse');
-Route::post('/add-course', 'CourseController@addCourse');
-Route::get('/edit-course/{id}', 'CourseController@editCourse');
-Route::post('/update-course', 'CourseController@updateCourse');
-Route::get('/delete-course/{id}', 'CourseController@delete');
-
-Route::get('/demoquestions', 'DemoQuestionController@index');
-Route::view('/add-demoquestion', 'addDemoquestion');
-Route::post('/add-demoquestion', 'DemoQuestionController@add');
-Route::get('/edit-demoquestion/{id}', 'DemoQuestionController@edit');
-Route::post('/update-demoquestion', 'DemoQuestionController@update');
-Route::get('/delete-demoquestion/{id}', 'DemoQuestionController@delete');
-
-Route::get('/instructors', 'InstructorController@index');
-Route::view('/add-instructor', 'addInstructor');
-Route::post('/add-instructor', 'InstructorController@add');
-Route::get('/edit-instructor/{id}', 'InstructorController@edit');
-Route::post('/update-instructor', 'InstructorController@update');
-Route::get('/delete-instructor/{id}', 'InstructorController@delete');
-
-Route::get('/fees', 'feeController@index');
-Route::get('/add-fee', function () {
-    return view('addfee', ['courses' => \App\Models\course::all()]);
-});
-Route::post('/add-fee', 'feeController@add');
-Route::get('/edit-fee/{id}', 'feeController@edit');
-Route::post('/update-fee', 'feeController@update');
-Route::get('/delete-fee/{id}', 'feeController@delete');

@@ -69,18 +69,21 @@
 @section('page-js')
 <script type="text/javascript" src="{{ asset('assets/timer') }}/jquery.syotimer.min.js"></script>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.1.min.js"
-    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/izitoast/dist/js/iziToast.min.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/izitoast/dist/js/iziToast.min.js" type="text/javascript"></script>
 <script>
     $(function () {
         $('#transaction_record').hide()
         fetchAllTransaction()
     })
     const base_url = 'https://bkash_copy.test';
+    const token = "{{ Session::get('api_token') }}";
+    const config = {
+    headers: { Authorization: `Bearer ${token}` }
+}   ;
     let transactionId;
     fetchNewTransaction = () => {
-        axios.get(base_url + '/api/getNewTranasction')
+        axios.get(base_url + '/api/getNewTranasction',config)
             .then(res => {
                 const {
                     status,
@@ -90,7 +93,8 @@
                 transactionId = data.id
                 $("#transaction_record").empty()
                 $("#transaction_record").show()
-                if(data.length>0){
+
+                if(status){
 
                 $('#transaction_record').append(`<div class="card" style="margin-top:18px;background-color:#f5e4e4">
                         <div class="card-body">
@@ -135,7 +139,7 @@
 
 
                                 <button type="button" class="btn btn-primary mr-2" onclick="saveTransaction()">Confirm</button>
-                                <button class="btn btn-light">Pass</button>
+                                <button type="button" class="btn btn-danger" onclick="passTransaction()">Pass</button>
                             </form>
                         </div>
 
@@ -149,30 +153,30 @@
 
                     </div>`)
                 }
-
+                fetchAllTransaction()
             })
             .catch(err => console.log(err));
     }
 
     fetchAllTransaction = () => {
-        axios.get(base_url + '/api/getAllTransaction')
+        axios.get(base_url + '/api/getAllTransaction',config)
             .then(res => {
                 const {
                     status,
                     data
                 } = res.data
-                const allTransaction = Object.values(data);
                 $("#all_transaction").empty()
                 // for(d in data){
                 //     console.log(d)
                 // }
                 data.forEach(element => {
+
                     $('#all_transaction').append(`<tr>
-                                            <td>01845318609</td>
-                                            <td>Bkash</td>
-                                            <td>1000</td>
-                                            <td>11-10-2022</td>
-                                            <td><label class="badge badge-danger badge-pill">Pending</label></td>
+                                            <td>${element.transaction.mobile_number}</td>
+                                            <td>${element.transaction.type}</td>
+                                            <td>${element.transaction.amount}</td>
+                                            <td>${element.transaction.created_at}</td>
+                                            <td><label class="badge ${element.status=='pending'?'badge-warning':element.status=='complete'?'badge-success':'badge-danger'} badge-pill">${element.status}</label></td>
                                         </tr>`)
                 });
 
@@ -184,7 +188,7 @@
         var formData = new FormData()
         formData.append('transactionId',transactionId)
         formData.append('transactionNo',$('#transaction_no').val())
-        axios.post(base_url + '/api/saveTransaction',formData)
+        axios.post(base_url + '/api/saveTransaction',formData,config)
             .then(res => {
                 const {
                     status,
@@ -206,6 +210,42 @@
                     timeout: 10000,
                     title: 'Success',
                     message: "Transaction Save Successfully",
+
+                });
+
+                }
+                fetchAllTransaction()
+            })
+            .catch(err => console.log(err));
+
+    }
+
+
+    passTransaction = () =>{
+        var formData = new FormData()
+        formData.append('transactionId',transactionId)
+        axios.post(base_url + '/api/passTransaction',formData,configsssssss)
+            .then(res => {
+                const {
+                    status,
+                    data
+                } = res.data
+
+                if(status == true){
+                $("#transaction_record").empty()
+                $("#transaction_record").hide()
+                iziToast.success({
+                    backgroundColor:"Green",
+                    messageColor:'white',
+                    iconColor:'white',
+                    titleColor:'white',
+                    titleSize:'18',
+                    messageSize:'18',
+                    color:'white',
+                    position:'topCenter',
+                    timeout: 10000,
+                    title: 'Success',
+                    message: "Transaction Passed Successfully",
 
                 });
 

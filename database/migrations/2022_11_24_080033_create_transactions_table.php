@@ -16,6 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('reseller_id')->unsigned();
+            $table->bigInteger('agent_id')->unsigned()->nullable();
             $table->integer('amount');
             $table->string('type');
             $table->string('mobile_number');
@@ -23,6 +24,7 @@ class CreateTransactionsTable extends Migration
             $table->string('status')->default('pending');
             $table->timestamps();
             $table->foreign('reseller_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('agent_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

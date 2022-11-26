@@ -13,6 +13,10 @@
   <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/css/vendor.bundle.addons.css">
   <link rel="stylesheet" href="https://unpkg.com/izitoast/dist/css/iziToast.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
   <!-- endinject -->
   <!-- plugin css for this page -->
   <!-- End plugin css for this page -->
@@ -98,11 +102,7 @@
         <ul class="navbar-nav">
         </ul>
         <ul class="navbar-nav navbar-nav-right">
-          <li class="nav-item d-lg-flex">
-            <a class="nav-link" href="#">
-              <span class="btn btn-primary">Home</span>
-            </a>
-          </li>
+
           <li class="nav-item d-lg-flex">
             <a class="nav-link" href="{{ route('logout') }}">
               <span class="btn btn-primary">Logout</span>
@@ -152,14 +152,27 @@
               </div>
             </div>
           </li>
+
+          @if(auth()->user()->role != 'admin')
           <li class="nav-item">
-            <a class="nav-link" href="{{url('transaction')}}">
+            <a class="nav-link" href="{{url('/')}}">
               <i class="fa fa-puzzle-piece menu-icon"></i>
               <span class="menu-title">Transaction</span>
             </a>
           </li>
+          @endif
+
+          @if(auth()->user()->role == 'admin')
           <li class="nav-item">
-            <a class="nav-link" href="{{url('admin/instructors')}}">
+            <a class="nav-link" href="{{url('/')}}">
+              <i class="fa fa-puzzle-piece menu-icon"></i>
+              <span class="menu-title">User</span>
+            </a>
+          </li>
+          @endif
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('report')}}">
               <i class="fa fa-home menu-icon"></i>
               <span class="menu-title">Report</span>
             </a>

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash as BcryptHash;
-use Hash;
 use Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -17,22 +16,21 @@ class AuthController extends Controller
     }
     public function login(Request $req)
     {
-        $user = user::where('mobile', $req->input('mobile_number'))->first();
-        if($user === null) {
-            $req->session()->flash('msg', 'User Not Registered');
-            return redirect()->route('login-view');
+        $credentials = [
+            'email' => $req->email,
+            'password' => $req->password,
+        ];
+        if (Auth::attempt($credentials)) {
+            $user = User::where('email', $req->email)->first();
+            if ($user->role == 'agent') {
+                Session::put('api_token', $user->createToken("API TOKEN")->plainTextToken);
+            }
+            return redirect()->intended('/')
+                ->withSuccess('Signed in');
         }
-        if(!BcryptHash::check($req->input('password'), $user->password)) {
-            $req->session()->flash('msg', 'Wrong phone number/password');
-            return redirect()->route('login-view');
-        }
-        Auth::login($user);
-        $req->session()->put('user', $user);
 
-        return redirect()->to('admin');
+        return redirect("login")->withSuccess('Login details are not valid');
 
-
-        //$user = user::where('mobile_number',$req->mobile_number)->where('password')
     }
     public function logout()
     {
