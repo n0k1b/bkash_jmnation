@@ -91,6 +91,7 @@ table.dataTable thead .sorting_asc{
                             <tr>
                                 @if(Auth::user()->role == 'admin')
                                 <th style="background-color: black;color:white">Reseller</th>
+                                <th style="background-color: black;color:white">Agent</th>
                                 @endif
                                 <th style="background-color: black;color:white">Mobile Number</th>
                                 <th style="background-color: black;color:white">Type</th>
@@ -106,6 +107,7 @@ table.dataTable thead .sorting_asc{
                         <tfoot class="thead-dark" style="background-color: black">
                             <tr>
                                 @if(Auth::user()->role == 'admin' || Auth::user()->role == 'sub')
+                                <th scope="col"></th>
                                 <th scope="col"></th>
                                 @endif
                                 <th scope="col"></th>
@@ -275,6 +277,7 @@ function fetch_table(start_date,end_date)
             //   {data: 'sl_no'},
             @if(Auth::user()->role == 'admin')
             {data:'reseller_name',name:'reseller_name',orderable:false},
+            {data:'agent_name',name:'agent_name',orderable:false},
             @endif
             {data:'mobile_number',name:'mobile_number'},
             {data:'type',name:'type'},
@@ -289,7 +292,7 @@ function fetch_table(start_date,end_date)
             var api = this.api();
 
       @if(Auth::user()->role == 'admin')
-        $( api.column( 5 ).footer() ).html(
+        $( api.column( 6 ).footer() ).html(
           total_cost
             );
 

@@ -54,12 +54,19 @@ class TransactionController extends Controller
     {
         //
         try {
+            $pendingTransaction = Transaction::where('reseller_id', Auth::user()->id)->where('status', 'pending')->sum('amount');
+            if ($pendingTransaction + $request->amount > Auth::user()->wallet) {
+                return back()->withError("Transaction Not Created! Wallet Credit Exceeded");
+            }
+
             $transaction = new Transaction();
             $transaction->reseller_id = auth()->user()->id;
             $transaction->amount = $request->amount;
             $transaction->type = $request->type;
+            $transaction->account_type = $request->account_type;
             $transaction->mobile_number = $request->mobile_number;
             $transaction->save();
+
             return back()->withSuccess("Transaction Created Successfully!");
             //return view('transaction-reseller', compact($transaction));
 
@@ -154,6 +161,7 @@ class TransactionController extends Controller
     {
 
         try {
+
             $userId = auth('sanctum')->user()->id;
             $transactionId = $request->transactionId;
             $tranasactionNo = $request->transactionNo;
@@ -165,6 +173,14 @@ class TransactionController extends Controller
             TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->update([
                 'status' => 'complete',
             ]);
+            $user = User::find($userId);
+            $user->wallet = $user->wallet + $transaction->amount;
+            $user->save();
+
+            $reseller = User::find($transaction->reseller_id);
+            $reseller->wallet = $reseller->wallet - $transaction->amount;
+            $reseller->save();
+
             return $this->successJsonResponse("Transaction Information Updated!", $transaction);
         } catch (Throwable $th) {
             Log::info($th);
@@ -243,7 +259,12 @@ class TransactionController extends Controller
                 ->addIndexColumn()
 
                 ->addColumn('reseller_name', function ($data) {
-                    return $data->user ? $data->user->first_name . " " . $data->user->last_name : '';
+                    return $data->reseller ? $data->reseller->first_name . " " . $data->reseller->last_name : '';
+
+                })
+
+                ->addColumn('agent_name', function ($data) {
+                    return $data->agent ? $data->agent->first_name . " " . $data->agent->last_name : '';
 
                 })
 
@@ -251,7 +272,7 @@ class TransactionController extends Controller
                     return Carbon::parse($data->created_at)->format('d-m-Y H:i:s');
 
                 })
-                ->rawColumns(['reseller_name'])
+                ->rawColumns(['reseller_name', 'agent_name'])
                 ->make(true);
 
         }

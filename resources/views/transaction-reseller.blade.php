@@ -43,13 +43,22 @@
                             required>
                     </div>
                     <div class="form-group">
-                        <label for="type">Type</label>
+                        <label for="type">Transaction Type</label>
                         <select class="form-control form-control-lg" id="exampleFormControlSelect2" name="type">
                             <option value="Bkash">Bkash</option>
                             <option value="Nagad">Nagad</option>
                             <option value="Rocket">Rocket</option>
                             <option value="Ucash">Ucash</option>
                             <option value="Upay">Upay</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Account Type</label>
+                        <select class="form-control form-control-lg" id="exampleFormControlSelect2" name="account_type">
+                            <option value="Personal">Personal</option>
+                            <option value="Agent">Agent</option>
+                            <option value="Merchant">Merchant</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -77,19 +86,28 @@
                                             <th>Number</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Date</th>
                                             <th>Status</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($transaction as $t)
-                                         <tr>
-                                            <td>{{$t->mobile_number}}</td>
-                                            <td>{{$t->type}}</td>
-                                            <td>{{$t->amount}}</td>
-                                            <td>{{$t->created_at}}</td>
-                                            <td><label class="badge {{$t->status=='pending'?'badge-warning':($t->status=='complete'?'badge-success':'badge-danger')}} badge-pill">{{$t->status}}</label></td>
-                                        </tr>
+                                            <tr>
+                                                <td>{{ $t->mobile_number }}</td>
+                                                <td>{{ $t->type }}</td>
+                                                <td>{{ $t->amount }}</td>
+                                                <td><label
+                                                        class="badge {{ $t->status=='pending'?'badge-warning':($t->status=='complete'?'badge-success':'badge-danger') }} badge-pill">{{ $t->status }}</label>
+                                                </td>
+                                                <td>
+                                                @if($t->status == 'pending')
+                                                <button type="button" onclick="delete_transaction()"
+                                                        class="btn btn-outline-secondary btn-rounded btn-icon">
+                                                        <i class="fas fa-trash text-danger"></i>
+                                                    </button>
+                                                    @endif
+                                                </td>
+                                            </tr>
                                         @endforeach
 
                                     </tbody>

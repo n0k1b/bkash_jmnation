@@ -87,9 +87,9 @@
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script>
 $(function() {
-
+    $('.recharge').bootstrapToggle();
   $('.recharge').change(function() {
-        console.log('hello')
+
       var check = 0;
       var status = $(this).prop('checked') == true ? 1 : 0;
       var user_id = $(this).data('id');

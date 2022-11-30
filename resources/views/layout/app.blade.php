@@ -7,8 +7,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>JMNation MFS</title>
+  <title>SN PLAY</title>
   <!-- plugins:css -->
+
   <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/iconfonts/font-awesome/css/all.min.css">
   <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/css/vendor.bundle.addons.css">
@@ -144,7 +145,7 @@
             <div class="nav-link">
               <div class="profile-name">
                 <p class="name">
-                  Welcome
+                  Wallet: {{ auth()->user()->wallet }}
                 </p>
                 <p class="designation">
 
@@ -177,6 +178,15 @@
               <span class="menu-title">Report</span>
             </a>
           </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('rewallet_requestport')}}">
+              <i class="fa fa-home menu-icon"></i>
+              <span class="menu-title">Wallet Request</span>
+            </a>
+          </li>
+
+
 
         </ul>
       </nav>

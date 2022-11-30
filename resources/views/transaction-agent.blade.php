@@ -111,10 +111,19 @@
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label"
-                                        style="font-size:16px;font-weight:600">Type</label>
+                                        style="font-size:16px;font-weight:600">Transaction Type</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
                                             value="`+data.type+`" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Account Type</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                            value="`+data.account_type+`" disabled>
                                     </div>
                                 </div>
 
@@ -224,7 +233,7 @@
     passTransaction = () =>{
         var formData = new FormData()
         formData.append('transactionId',transactionId)
-        axios.post(base_url + '/api/passTransaction',formData,configsssssss)
+        axios.post(base_url + '/api/passTransaction',formData,config)
             .then(res => {
                 const {
                     status,

@@ -22,9 +22,8 @@ class AuthController extends Controller
         ];
         if (Auth::attempt($credentials)) {
             $user = User::where('email', $req->email)->first();
-            if ($user->role == 'agent') {
-                Session::put('api_token', $user->createToken("API TOKEN")->plainTextToken);
-            }
+
+            Session::put('api_token', $user->createToken("API TOKEN")->plainTextToken);
             return redirect()->intended('/')
                 ->withSuccess('Signed in');
         }
