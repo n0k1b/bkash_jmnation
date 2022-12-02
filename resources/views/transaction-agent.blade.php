@@ -76,7 +76,7 @@
         $('#transaction_record').hide()
         fetchAllTransaction()
     })
-    const base_url = 'https://bkash_copy.test';
+    const base_url = 'https://slplay.xyz';
     const token = "{{ Session::get('api_token') }}";
     const config = {
     headers: { Authorization: `Bearer ${token}` }
