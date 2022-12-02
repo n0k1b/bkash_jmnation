@@ -33,6 +33,7 @@
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
+                <h4>Update Password</h4>
                 <form action="{{ route('create_transaction') }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
@@ -107,7 +108,7 @@
                                                 </td>
                                                 <td>
                                                 @if($t->status == 'pending')
-                                                <button type="button" onclick="delete_transaction({{$t->id}})"
+                                                <button type="button" onclick="delete_transaction()"
                                                         class="btn btn-outline-secondary btn-rounded btn-icon">
                                                         <i class="fas fa-trash text-danger"></i>
                                                     </button>
@@ -135,64 +136,3 @@
 @section('page-js')
 <script type="text/javascript" src="{{ asset('assets/timer') }}/jquery.syotimer.min.js"></script>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/izitoast/dist/js/iziToast.min.js" type="text/javascript"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script>
-    function delete_transaction(id)
-    {
-        var formdata = new FormData();
-        formdata.append('id',id);
-
-        swal({
-                     title: "Are you sure to delete this record?",
-                     icon: "warning",
-                     buttons: true,
-                     dangerMode: true,
-                     })
-                     .then((willDelete) => {
-                     if (willDelete) {
-                        $.ajax({
-        processData: false,
-        contentType: false,
-        url: "delete_transaction",
-        type:"POST",
-        headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-         },
-        data: formdata,
-        beforeSend: function () {
-            $('.cover-spin').show(0)
-            },
-        complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-            $('.cover-spin').hide(0)
-            },
-        success:function(response){
-           location.reload();
-            //load_recent_recharge();
-
-            $('.cover-spin').hide(0)
-            iziToast.success({
-                    backgroundColor:"Green",
-                    messageColor:'white',
-                    iconColor:'white',
-                    titleColor:'white',
-                    titleSize:'18',
-                    messageSize:'18',
-                    color:'white',
-                    position:'topCenter',
-                    timeout: 10000,
-                    title: 'Success',
-                    message: "Your transaction deleted successfully",
-
-                });
-
-
-        },
-       });
-                     } else {
-                        //location.reload()
-                     }
-                     });
-    }
-</script>

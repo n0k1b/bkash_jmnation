@@ -54,6 +54,9 @@ class TransactionController extends Controller
     {
         //
         try {
+            if (Auth::user()->pin != $request->pin) {
+                return back()->withError("Pin is not correct");
+            }
             $pendingTransaction = Transaction::where('reseller_id', Auth::user()->id)->where('status', 'pending')->sum('amount');
             if ($pendingTransaction + $request->amount > Auth::user()->wallet) {
                 return back()->withError("Transaction Not Created! Wallet Credit Exceeded");

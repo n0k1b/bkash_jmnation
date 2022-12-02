@@ -19,6 +19,7 @@ class AuthController extends Controller
         $credentials = [
             'email' => $req->email,
             'password' => $req->password,
+            'pin' => $req->pin,
         ];
         if (Auth::attempt($credentials)) {
             $user = User::where('email', $req->email)->first();
@@ -28,7 +29,7 @@ class AuthController extends Controller
                 ->withSuccess('Signed in');
         }
 
-        return redirect("login")->withSuccess('Login details are not valid');
+        return redirect("login")->withError('Login informations are not valid');
 
     }
     public function logout()
