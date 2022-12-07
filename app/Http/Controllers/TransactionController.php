@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\transaction as Transaction;
+use App\Models\transaction;
 use App\Models\TransactionMapAgent;
 use App\Models\User;
 use Auth;
@@ -23,7 +23,7 @@ class TransactionController extends Controller
     public function index()
     {
         $user_id = Auth::user()->id;
-        $transaction = Transaction::where('reseller_id', $user_id)->latest()->take(10)->get();
+        $transaction = transaction::where('reseller_id', $user_id)->latest()->take(10)->get();
         if (Auth::user()->role == 'agent') {
             return view('transaction-agent');
         } else if (Auth::user()->role == 'reseller') {
@@ -59,13 +59,13 @@ class TransactionController extends Controller
             if (!Hash::check($request->pin, Auth::user()->pin)) {
                 return back()->withError("Pin is not correct")->withInput();
             }
-            $pendingTransaction = Transaction::where('reseller_id', Auth::user()->id)->where('status', 'pending')->sum('amount');
+            $pendingTransaction = transaction::where('reseller_id', Auth::user()->id)->where('status', 'pending')->sum('amount');
             if ($pendingTransaction + $request->amount > Auth::user()->wallet) {
                 return back()->withError("Transaction Not Created! Wallet Credit Exceeded")->withInput();
                 ;
             }
 
-            $transaction = new Transaction();
+            $transaction = new transaction();
             $transaction->reseller_id = auth()->user()->id;
             $transaction->amount = $request->amount;
             $transaction->type = $request->type;
@@ -138,7 +138,7 @@ class TransactionController extends Controller
             $userId = auth('sanctum')->user()->id;
             $existing_record = TransactionMapAgent::where('status', '!=', 'complete')->where('agent_id', $userId)->where('pass_count', 1)->first();
             if ($existing_record) {
-                $transaction = Transaction::find($existing_record->transaction_id);
+                $transaction = transaction::find($existing_record->transaction_id);
                 $transaction->status = 'locked';
                 $transaction->save();
                 TransactionMapAgent::where('transaction_id', $transaction->id)->where('agent_id', $userId)->update([
@@ -197,7 +197,7 @@ class TransactionController extends Controller
             $userId = auth('sanctum')->user()->id;
             $transactionId = $request->transactionId;
             $tranasactionNo = $request->transactionNo;
-            $transaction = Transaction::find($transactionId);
+            $transaction = transaction::find($transactionId);
             $transaction->status = 'complete';
             $transaction->agent_id = $userId;
             $transaction->transaction_id = $tranasactionNo;
@@ -225,7 +225,7 @@ class TransactionController extends Controller
         try {
             $userId = auth('sanctum')->user()->id;
             $transactionId = $request->transactionId;
-            $transaction = Transaction::find($transactionId);
+            $transaction = transaction::find($transactionId);
             $transaction->status = 'pending';
             $transaction->save();
             $transactionMapAgent = TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->first();
@@ -267,18 +267,18 @@ class TransactionController extends Controller
         $total_cost = 0;
         if ($request->ajax()) {
             if ($reseller_id) {
-                $data = Transaction::where('reseller_id', $reseller_id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
+                $data = transaction::where('reseller_id', $reseller_id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
             } else if ($agent_id) {
-                $data = Transaction::where('agent_id', $agent_id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
+                $data = transaction::where('agent_id', $agent_id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
             } else if ($reseller_id && $agent_id) {
-                $data = Transaction::where('reseller_id', $reseller_id)->where('agent_id', $agent_id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
+                $data = transaction::where('reseller_id', $reseller_id)->where('agent_id', $agent_id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
             } else {
                 if (Auth::user()->role == 'admin') {
-                    $data = Transaction::whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
+                    $data = transaction::whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
                 } else if (Auth::user()->role == 'reseller') {
-                    $data = Transaction::where('reseller_id', Auth::user()->id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
+                    $data = transaction::where('reseller_id', Auth::user()->id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
                 } else {
-                    $data = Transaction::where('agent_id', Auth::user()->id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
+                    $data = transaction::where('agent_id', Auth::user()->id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
                 }
             }
             $total_cost = $data->sum('amount');
@@ -318,7 +318,7 @@ class TransactionController extends Controller
 
     public function deleteTransaction(Request $request)
     {
-        $transaction = Transaction::find($request->id);
+        $transaction = transaction::find($request->id);
         if ($transaction->status == 'locked') {
             return response()->json(['message' => 'Transaction can not be deleted due to locked state', 'status' => false]);
         }
