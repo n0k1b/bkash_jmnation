@@ -8,6 +8,7 @@ use App\Models\User;
 use Auth;
 use Carbon\Carbon;
 use DataTables;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -54,12 +55,14 @@ class TransactionController extends Controller
     {
         //
         try {
-            if (Auth::user()->pin != $request->pin) {
-                return back()->withError("Pin is not correct");
+
+            if (!Hash::check($request->pin, Auth::user()->pin)) {
+                return back()->withError("Pin is not correct")->withInput();
             }
             $pendingTransaction = Transaction::where('reseller_id', Auth::user()->id)->where('status', 'pending')->sum('amount');
             if ($pendingTransaction + $request->amount > Auth::user()->wallet) {
-                return back()->withError("Transaction Not Created! Wallet Credit Exceeded");
+                return back()->withError("Transaction Not Created! Wallet Credit Exceeded")->withInput();
+                ;
             }
 
             $transaction = new Transaction();

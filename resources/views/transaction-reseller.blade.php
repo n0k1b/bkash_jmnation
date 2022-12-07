@@ -38,11 +38,12 @@
                     <div class="form-group">
                         <label for="title">Mobile Number</label>
                         <input type="text" class="form-control" placeholder="Mobile Number" name="mobile_number"
-                            required>
+                            value="{{old('mobile_number')}}" required>
                     </div>
                     <div class="form-group">
                         <label for="type">Transaction Type</label>
-                        <select class="form-control form-control-lg" id="exampleFormControlSelect2" name="type">
+                        <select class="form-control form-control-lg" id="exampleFormControlSelect2" name="type"
+                            value="{{old('type')}}">
                             <option value="Bkash">Bkash</option>
                             <option value="Nagad">Nagad</option>
                             <option value="Rocket">Rocket</option>
@@ -53,7 +54,8 @@
 
                     <div class="form-group">
                         <label for="type">Account Type</label>
-                        <select class="form-control form-control-lg" id="exampleFormControlSelect2" name="account_type">
+                        <select class="form-control form-control-lg" id="exampleFormControlSelect2" name="account_type"
+                            value="{{old('account_type')}}">
                             <option value="Personal">Personal</option>
                             <option value="Agent">Agent</option>
                             <option value="Merchant">Merchant</option>
@@ -61,12 +63,14 @@
                     </div>
                     <div class="form-group">
                         <label for="amount">Amount</label>
-                        <input type="number" class="form-control" placeholder="Amount" name="amount" required>
+                        <input type="number" class="form-control" placeholder="Amount" name="amount"
+                            value="{{old('amount')}}" required>
                     </div>
 
                     <div class="form-group">
                         <label for="amount">Service Charge</label>
-                        <input type="number" class="form-control" placeholder="Amount" name="service_charge" required>
+                        <input type="number" class="form-control" placeholder="Amount" name="service_charge"
+                            value="{{old('service_charge')}}" required>
                     </div>
 
                     <div class="form-group">
