@@ -11,6 +11,6 @@ class TransactionMapAgent extends Model
     protected $guarded = [];
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class, 'transaction_id');
+        return $this->belongsTo(transaction::class, 'transaction_id');
     }
 }
