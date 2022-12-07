@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\transaction;
+use App\Models\transaction as Transaction;
 use App\Models\TransactionMapAgent;
 use App\Models\User;
 use Auth;
