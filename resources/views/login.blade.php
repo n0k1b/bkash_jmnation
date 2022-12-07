@@ -51,7 +51,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg" id="exampleInputPassword1"
+                                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1"
                                         placeholder="Pin" name="pin">
                                 </div>
                                 <div class="mt-3">

@@ -12,4 +12,10 @@ class Wallet extends Model
     {
         return $this->belongsTo(User::class, 'reseller_id');
     }
+
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
 }

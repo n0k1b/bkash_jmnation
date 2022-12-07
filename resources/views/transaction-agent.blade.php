@@ -6,7 +6,6 @@
         overflow-y: auto;
         height: 224px;
     }
-
 </style>
 
 <div class="page-header">
@@ -21,6 +20,11 @@
                 <div class="text-center">
                     <button type="button" class="btn btn-primary btn-rounded btn-fw"
                         onclick="fetchNewTransaction()">Fetch New Transaction</button>
+                    <button type="button" class="btn btn-success btn-rounded btn-fw"
+                        onclick="fetchPassTransaction()">Fetch Pass Transaction</button>
+                </div>
+                <div class="text-center">
+
                 </div>
                 <div id="transaction_record">
 
@@ -69,21 +73,23 @@
 @section('page-js')
 <script type="text/javascript" src="{{ asset('assets/timer') }}/jquery.syotimer.min.js"></script>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/izitoast/dist/js/iziToast.min.js" type="text/javascript"></script>
 <script>
     $(function () {
         $('#transaction_record').hide()
         fetchAllTransaction()
     })
-    const base_url = 'https://slplay.xyz';
+    // const base_url = 'https://slplay.xyz';
+    const base_url = 'http://bkash_copy.test';
     const token = "{{ Session::get('api_token') }}";
     const config = {
-    headers: { Authorization: `Bearer ${token}` }
-}   ;
+        headers: { Authorization: `Bearer ${token}` }
+    };
     let transactionId;
     fetchNewTransaction = () => {
-        axios.get(base_url + '/api/getNewTranasction',config)
+        axios.get(base_url + '/api/getNewTransaction', config)
             .then(res => {
                 const {
                     status,
@@ -94,9 +100,9 @@
                 $("#transaction_record").empty()
                 $("#transaction_record").show()
 
-                if(status){
+                if (status) {
 
-                $('#transaction_record').append(`<div class="card" style="margin-top:18px;background-color:#f5e4e4">
+                    $('#transaction_record').append(`<div class="card" style="margin-top:18px;background-color:#f5e4e4">
                         <div class="card-body">
                             <form class="forms-sample">
 
@@ -105,7 +111,7 @@
                                         Number</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
-                                            value="`+data.mobile_number+`" disabled>
+                                            value="`+ data.mobile_number + `" disabled>
                                     </div>
                                 </div>
 
@@ -114,7 +120,7 @@
                                         style="font-size:16px;font-weight:600">Transaction Type</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
-                                            value="`+data.type+`" disabled>
+                                            value="`+ data.type + `" disabled>
                                     </div>
                                 </div>
 
@@ -123,7 +129,7 @@
                                         style="font-size:16px;font-weight:600">Account Type</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
-                                            value="`+data.account_type+`" disabled>
+                                            value="`+ data.account_type + `" disabled>
                                     </div>
                                 </div>
 
@@ -132,7 +138,7 @@
                                         style="font-size:16px;font-weight:600">Amount</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
-                                            value="`+data.amount+`" disabled>
+                                            value="`+ data.amount + `" disabled>
                                     </div>
                                 </div>
 
@@ -140,7 +146,7 @@
                                     <label class="col-sm-3 col-form-label"
                                         style="font-size:16px;font-weight:600">Transaction No</label>
                                     <div class="col-sm-9">
-                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="transaction_no">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="transaction_no" required>
                                     </div>
                                 </div>
 
@@ -154,7 +160,93 @@
 
                     </div>`)
                 }
-                else{
+                else {
+                    $('#transaction_record').append(`<div class="card" style="margin-top:18px;background-color:#f5e4e4">
+                        <div class="card-body">
+                            <p>No New Transaction Available</p>
+                        </div>
+
+                    </div>`)
+                }
+                fetchAllTransaction()
+            })
+            .catch(err => console.log(err));
+    }
+
+
+    fetchPassTransaction = () => {
+        axios.get(base_url + '/api/getPassTransaction', config)
+            .then(res => {
+                const {
+                    status,
+                    data
+                } = res.data
+
+                transactionId = data.id
+                $("#transaction_record").empty()
+                $("#transaction_record").show()
+
+                if (status) {
+
+                    $('#transaction_record').append(`<div class="card" style="margin-top:18px;background-color:#f5e4e4">
+                        <div class="card-body">
+                            <form class="forms-sample">
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label" style="font-size:16px;font-weight:600">Mobile
+                                        Number</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                            value="`+ data.mobile_number + `" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Transaction Type</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                            value="`+ data.type + `" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Account Type</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                            value="`+ data.account_type + `" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Amount</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                            value="`+ data.amount + `" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Transaction No</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="transaction_no" required>
+                                    </div>
+                                </div>
+
+
+
+
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveTransaction()">Confirm</button>
+                                <button type="button" class="btn btn-danger" onclick="passTransaction()">Pass</button>
+                            </form>
+                        </div>
+
+                    </div>`)
+                }
+                else {
                     $('#transaction_record').append(`<div class="card" style="margin-top:18px;background-color:#f5e4e4">
                         <div class="card-body">
                             <p>No New Transaction Available</p>
@@ -168,7 +260,7 @@
     }
 
     fetchAllTransaction = () => {
-        axios.get(base_url + '/api/getAllTransaction',config)
+        axios.get(base_url + '/api/getAllTransaction', config)
             .then(res => {
                 const {
                     status,
@@ -185,7 +277,7 @@
                                             <td>${element.transaction.type}</td>
                                             <td>${element.transaction.amount}</td>
                                             <td>${element.transaction.created_at}</td>
-                                            <td><label class="badge ${element.status=='pending'?'badge-warning':element.status=='complete'?'badge-success':'badge-danger'} badge-pill">${element.status}</label></td>
+                                            <td><label class="badge ${element.status == 'pending' ? 'badge-warning' : element.status == 'complete' ? 'badge-success' : 'badge-danger'} badge-pill">${element.status}</label></td>
                                         </tr>`)
                 });
 
@@ -193,34 +285,37 @@
             })
             .catch(err => console.log(err));
     }
-    saveTransaction = () =>{
+    saveTransaction = () => {
         var formData = new FormData()
-        formData.append('transactionId',transactionId)
-        formData.append('transactionNo',$('#transaction_no').val())
-        axios.post(base_url + '/api/saveTransaction',formData,config)
+        formData.append('transactionId', transactionId)
+
+
+
+        formData.append('transactionNo', $('#transaction_no').val())
+        axios.post(base_url + '/api/saveTransaction', formData, config)
             .then(res => {
                 const {
                     status,
                     data
                 } = res.data
 
-                if(status == true){
-                $("#transaction_record").empty()
-                $("#transaction_record").hide()
-                iziToast.success({
-                    backgroundColor:"Green",
-                    messageColor:'white',
-                    iconColor:'white',
-                    titleColor:'white',
-                    titleSize:'18',
-                    messageSize:'18',
-                    color:'white',
-                    position:'topCenter',
-                    timeout: 10000,
-                    title: 'Success',
-                    message: "Transaction Save Successfully",
+                if (status == true) {
+                    $("#transaction_record").empty()
+                    $("#transaction_record").hide()
+                    iziToast.success({
+                        backgroundColor: "Green",
+                        messageColor: 'white',
+                        iconColor: 'white',
+                        titleColor: 'white',
+                        titleSize: '18',
+                        messageSize: '18',
+                        color: 'white',
+                        position: 'topCenter',
+                        timeout: 10000,
+                        title: 'Success',
+                        message: "Transaction Save Successfully",
 
-                });
+                    });
 
                 }
                 fetchAllTransaction()
@@ -230,33 +325,32 @@
     }
 
 
-    passTransaction = () =>{
+    passTransaction = () => {
         var formData = new FormData()
-        formData.append('transactionId',transactionId)
-        axios.post(base_url + '/api/passTransaction',formData,config)
+        formData.append('transactionId', transactionId)
+        axios.post(base_url + '/api/passTransaction', formData, config)
             .then(res => {
                 const {
                     status,
                     data
                 } = res.data
 
-                if(status == true){
-                $("#transaction_record").empty()
-                $("#transaction_record").hide()
-                iziToast.success({
-                    backgroundColor:"Green",
-                    messageColor:'white',
-                    iconColor:'white',
-                    titleColor:'white',
-                    titleSize:'18',
-                    messageSize:'18',
-                    color:'white',
-                    position:'topCenter',
-                    timeout: 10000,
-                    title: 'Success',
-                    message: "Transaction Passed Successfully",
+                if (status == true) {
+                    $("#transaction_record").empty()
+                    iziToast.success({
+                        backgroundColor: "Green",
+                        messageColor: 'white',
+                        iconColor: 'white',
+                        titleColor: 'white',
+                        titleSize: '18',
+                        messageSize: '18',
+                        color: 'white',
+                        position: 'topCenter',
+                        timeout: 10000,
+                        title: 'Success',
+                        message: "Transaction Passed Successfully",
 
-                });
+                    });
 
                 }
                 fetchAllTransaction()

@@ -28,10 +28,10 @@ class TransactionController extends Controller
         } else if (Auth::user()->role == 'reseller') {
             return view('transaction-reseller', compact('transaction'));
         } else if (Auth::user()->role == 'admin') {
-            $data = User::get();
-            return view('user-list', compact('data'));
+            $resellers = User::where('role', 'reseller')->get();
+            $agents = User::where('role', 'agent')->get();
+            return view('report', compact('resellers', 'agents'));
         }
-
     }
 
     /**
@@ -68,6 +68,7 @@ class TransactionController extends Controller
             $transaction->type = $request->type;
             $transaction->account_type = $request->account_type;
             $transaction->mobile_number = $request->mobile_number;
+            $transaction->service_charge = $request->service_charge ?: null;
             $transaction->save();
 
             return back()->withSuccess("Transaction Created Successfully!");
@@ -128,15 +129,41 @@ class TransactionController extends Controller
         return 'hello';
     }
 
+    public function getPassTranasction()
+    {
+        try {
+            $userId = auth('sanctum')->user()->id;
+            $existing_record = TransactionMapAgent::where('status', '!=', 'complete')->where('agent_id', $userId)->where('pass_count', 1)->first();
+            if ($existing_record) {
+                $transaction = Transaction::find($existing_record->transaction_id);
+                $transaction->status = 'locked';
+                $transaction->save();
+                TransactionMapAgent::where('transaction_id', $transaction->id)->where('agent_id', $userId)->update([
+                    'status' => 'pending',
+                ]);
+                return $this->successJsonResponse("Transaction Information Found!", $transaction);
+            }
+            return $this->errorJsonResponse("Transaction Information Not Found!!");
+
+        } catch (Throwable $th) {
+            return $this->exceptionJsonResponse($th);
+        }
+    }
+
     public function getNewTransaction()
     {
         try {
             $userId = auth('sanctum')->user()->id;
-            $existing_record = TransactionMapAgent::where('status', '!=', 'complete')->where('agent_id', $userId)->first();
+            $existing_record = TransactionMapAgent::where('status', 'pending')->where('agent_id', $userId)->first();
+            $passedTransaction = TransactionMapAgent::select('transaction_id')
+                ->where('status', 'passed')
+                ->where('agent_id', $userId)
+                ->get()
+                ->toArray();
             if ($existing_record) {
                 $transaction = transaction::where('id', $existing_record->transaction_id)->first();
             } else {
-                $transaction = transaction::where('status', 'pending')->latest()->first();
+                $transaction = transaction::whereNotIn('id', $passedTransaction)->where('status', 'pending')->latest()->first();
             }
             if ($transaction) {
                 if (!$existing_record) {
@@ -151,15 +178,14 @@ class TransactionController extends Controller
                 }
 
                 return $this->successJsonResponse("Transaction Information Found!", $transaction);
-
             } else {
                 return $this->errorJsonResponse("Transaction Information Not Found!!", $transaction);
             }
-
         } catch (Throwable $th) {
             return $this->exceptionJsonResponse($th);
         }
     }
+
     public function saveTransaction(Request $request)
     {
 
@@ -189,7 +215,6 @@ class TransactionController extends Controller
             Log::info($th);
             return $this->exceptionJsonResponse($th);
         }
-
     }
 
     public function passTransaction(Request $request)
@@ -200,14 +225,16 @@ class TransactionController extends Controller
             $transaction = Transaction::find($transactionId);
             $transaction->status = 'pending';
             $transaction->save();
+            $transactionMapAgent = TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->first();
+            $currentCount = $transactionMapAgent->pass_count;
             TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->update([
                 'status' => 'passed',
+                'pass_count' => $currentCount + 1
             ]);
             return $this->successJsonResponse("Transaction Information Passed!", $transaction);
         } catch (Throwable $th) {
             return $this->exceptionJsonResponse($th);
         }
-
     }
 
     public function getAllTransaction()
@@ -216,7 +243,6 @@ class TransactionController extends Controller
         try {
             $transaction = TransactionMapAgent::where('agent_id', $userId)->with('transaction')->get()->toArray();
             return $this->successJsonResponse("Transaction Information Updated!", $transaction);
-
         } catch (Throwable $th) {
             return $this->exceptionJsonResponse($th);
         }
@@ -251,11 +277,12 @@ class TransactionController extends Controller
                 } else {
                     $data = Transaction::where('agent_id', Auth::user()->id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
                 }
-
             }
             $total_cost = $data->sum('amount');
+            $total_service_charge = $data->sum('service_charge');
             if (sizeof($data) > 0) {
                 $data[0]['total_cost'] = round($total_cost, 2);
+                $data[0]['total_service_charge'] = round($total_service_charge, 2);
             }
             return Datatables::of($data)
 
@@ -263,21 +290,17 @@ class TransactionController extends Controller
 
                 ->addColumn('reseller_name', function ($data) {
                     return $data->reseller ? $data->reseller->first_name . " " . $data->reseller->last_name : '';
-
                 })
 
                 ->addColumn('agent_name', function ($data) {
                     return $data->agent ? $data->agent->first_name . " " . $data->agent->last_name : '';
-
                 })
 
                 ->addColumn('date', function ($data) {
                     return Carbon::parse($data->created_at)->format('d-m-Y H:i:s');
-
                 })
                 ->rawColumns(['reseller_name', 'agent_name'])
                 ->make(true);
-
         }
     }
     public function changeStatus(Request $request)
@@ -288,7 +311,15 @@ class TransactionController extends Controller
         $user->save();
 
         return response()->json(['message' => 'success']);
-
     }
 
+    public function deleteTransaction(Request $request)
+    {
+        $transaction = Transaction::find($request->id);
+        if ($transaction->status == 'locked') {
+            return response()->json(['message' => 'Transaction can not be deleted due to locked state', 'status' => false]);
+        }
+        $transaction->delete();
+        return response()->json(['message' => 'Transaction deleted successfully', 'status' => true]);
+    }
 }

@@ -6,22 +6,21 @@
         overflow-y: auto;
         height: 224px;
     }
-
 </style>
 @if(\Session::has('error'))
-    <div class="alert alert-danger">
-        <ul>
-            <li>{!! \Session::get('error') !!}</li>
-        </ul>
-    </div>
+<div class="alert alert-danger">
+    <ul>
+        <li>{!! \Session::get('error') !!}</li>
+    </ul>
+</div>
 @endif
 
 @if(\Session::has('success'))
-    <div class="alert alert-success">
-        <ul>
-            <li>{!! \Session::get('success') !!}</li>
-        </ul>
-    </div>
+<div class="alert alert-success">
+    <ul>
+        <li>{!! \Session::get('success') !!}</li>
+    </ul>
+</div>
 @endif
 
 <div class="page-header">
@@ -33,8 +32,7 @@
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('create_transaction') }}" method="post"
-                    enctype="multipart/form-data">
+                <form action="{{ route('create_transaction') }}" method="post" enctype="multipart/form-data">
                     @csrf
 
                     <div class="form-group">
@@ -63,14 +61,17 @@
                     </div>
                     <div class="form-group">
                         <label for="amount">Amount</label>
-                        <input type="number" class="form-control"  placeholder="Amount" name="amount"
-                            required>
+                        <input type="number" class="form-control" placeholder="Amount" name="amount" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Service Charge</label>
+                        <input type="number" class="form-control" placeholder="Amount" name="service_charge" required>
                     </div>
 
                     <div class="form-group">
                         <label for="amount">Pin</label>
-                        <input type="text" class="form-control" placeholder="Pin" name="pin"
-                            required>
+                        <input type="password" class="form-control" placeholder="Pin" name="pin" required>
                     </div>
                     <button class="btn btn-primary" type="submit">Create</button>
                 </form>
@@ -98,22 +99,23 @@
                                     </thead>
                                     <tbody>
                                         @foreach($transaction as $t)
-                                            <tr>
-                                                <td>{{ $t->mobile_number }}</td>
-                                                <td>{{ $t->type }}</td>
-                                                <td>{{ $t->amount }}</td>
-                                                <td><label
-                                                        class="badge {{ $t->status=='pending'?'badge-warning':($t->status=='complete'?'badge-success':'badge-danger') }} badge-pill">{{ $t->status }}</label>
-                                                </td>
-                                                <td>
+                                        <tr>
+                                            <td>{{ $t->mobile_number }}</td>
+                                            <td>{{ $t->type }}</td>
+                                            <td>{{ $t->amount }}</td>
+                                            <td><label
+                                                    class="badge {{ $t->status=='pending'?'badge-warning':($t->status=='complete'?'badge-success':'badge-danger') }} badge-pill">{{
+                                                    $t->status }}</label>
+                                            </td>
+                                            <td>
                                                 @if($t->status == 'pending')
                                                 <button type="button" onclick="delete_transaction({{$t->id}})"
-                                                        class="btn btn-outline-secondary btn-rounded btn-icon">
-                                                        <i class="fas fa-trash text-danger"></i>
-                                                    </button>
-                                                    @endif
-                                                </td>
-                                            </tr>
+                                                    class="btn btn-outline-secondary btn-rounded btn-icon">
+                                                    <i class="fas fa-trash text-danger"></i>
+                                                </button>
+                                                @endif
+                                            </td>
+                                        </tr>
                                         @endforeach
 
                                     </tbody>
@@ -135,64 +137,116 @@
 @section('page-js')
 <script type="text/javascript" src="{{ asset('assets/timer') }}/jquery.syotimer.min.js"></script>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/izitoast/dist/js/iziToast.min.js" type="text/javascript"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-    function delete_transaction(id)
-    {
+    $(function () {
+        var toast = document.querySelector('.iziToast');
+        var message = sessionStorage.getItem('message');
+        sessionStorage.removeItem('message');
+
+        if (toast) {
+            iziToast.hide({}, toast);
+        }
+        if (sessionStorage.getItem('error')) {
+            sessionStorage.removeItem('error');
+
+            iziToast.error({
+                backgroundColor: "#D12C09",
+                messageColor: 'white',
+                iconColor: 'white',
+                titleColor: 'white',
+                titleSize: '18',
+                messageSize: '18',
+                color: 'white',
+                position: 'topCenter',
+                timeout: 30000,
+                title: 'Error',
+                message: message,
+
+
+            });
+
+            //console.log(response.message);
+
+        }
+
+        if (sessionStorage.getItem('success')) {
+            sessionStorage.removeItem('success');
+
+
+            iziToast.success({
+                backgroundColor: "Green",
+                messageColor: 'white',
+                iconColor: 'white',
+                titleColor: 'white',
+                titleSize: '18',
+                messageSize: '18',
+                color: 'white',
+                position: 'topCenter',
+                timeout: 30000,
+                title: 'Success',
+                message: message,
+
+            });
+            //console.log(response.message);
+
+        }
+    });
+    function delete_transaction(id) {
         var formdata = new FormData();
-        formdata.append('id',id);
+        formdata.append('id', id);
 
         swal({
-                     title: "Are you sure to delete this record?",
-                     icon: "warning",
-                     buttons: true,
-                     dangerMode: true,
-                     })
-                     .then((willDelete) => {
-                     if (willDelete) {
-                        $.ajax({
-        processData: false,
-        contentType: false,
-        url: "delete_transaction",
-        type:"POST",
-        headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-         },
-        data: formdata,
-        beforeSend: function () {
-            $('.cover-spin').show(0)
-            },
-        complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-            $('.cover-spin').hide(0)
-            },
-        success:function(response){
-           location.reload();
-            //load_recent_recharge();
+            title: "Are you sure to delete this record?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        processData: false,
+                        contentType: false,
+                        url: "delete_transaction",
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: formdata,
+                        beforeSend: function () {
+                            $('.cover-spin').show(0)
+                        },
+                        complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+                            $('.cover-spin').hide(0)
+                        },
+                        success: function (response) {
+                            console.log(response)
+                            //location.reload();
+                            //load_recent_recharge();
 
-            $('.cover-spin').hide(0)
-            iziToast.success({
-                    backgroundColor:"Green",
-                    messageColor:'white',
-                    iconColor:'white',
-                    titleColor:'white',
-                    titleSize:'18',
-                    messageSize:'18',
-                    color:'white',
-                    position:'topCenter',
-                    timeout: 10000,
-                    title: 'Success',
-                    message: "Your transaction deleted successfully",
-
-                });
+                            $('.cover-spin').hide(0)
+                            if (response.status == true) {
+                                location.reload();
+                                sessionStorage.setItem('success', true);
+                                sessionStorage.setItem('message', response.message);
+                                //console.log(response.message);
+                            }
+                            else {
+                                location.reload();
+                                sessionStorage.setItem('error', true);
+                                sessionStorage.setItem('message', response.message);
+                            }
 
 
-        },
-       });
-                     } else {
-                        //location.reload()
-                     }
-                     });
+
+                        },
+                    });
+                } else {
+                    //location.reload()
+                }
+            });
     }
 </script>

@@ -7,13 +7,12 @@
         height: 224px;
     }
 
-/* .sorting_disabled{
+    /* .sorting_disabled{
     display: none !important;
 } */
-table.dataTable thead .sorting_asc{
-    background-image: none !important;
-}
-
+    table.dataTable thead .sorting_asc {
+        background-image: none !important;
+    }
 </style>
 
 <div class="row">
@@ -29,8 +28,7 @@ table.dataTable thead .sorting_asc{
                 <div class="col-md-3">
                     <div class="date_picker_pair mb-3">
                         <label for="inputSearchDate" class="form-label">Select Date</label>
-                        <input type="text" class="form-control" name="daterange" id="inputSearchDate"
-                            value="01/01/2018 - 01/15/2018">
+                        <input type="text" class="form-control" name="daterange" id="inputSearchDate" value="01/01/2018 - 01/15/2018">
                         <input type="hidden" class='start_date' name='start_date'>
                         <input type="hidden" class='end_date' name="end_date">
 
@@ -43,12 +41,12 @@ table.dataTable thead .sorting_asc{
                     <div class="form-row align-items-center offer_select_option">
                         <label for="inlineFormCustomSelect" style="margin-bottom:14px">Choose Retailer</label>
 
-                        <select data-placeholder="Select an Option" class="custom-select reseller" id="reseller"
-                            name="resellerq">
+                        <select data-placeholder="Select an Option" class="custom-select reseller" id="reseller" name="resellerq">
                             <option></option>
                             @foreach ( $resellers as $data )
                             <option value="{{ $data->id }}">
-                                {{ $data->first_name." ".$data->last_name }}</option>
+                                {{ $data->first_name." ".$data->last_name }}
+                            </option>
                             @endforeach
 
                         </select>
@@ -59,12 +57,12 @@ table.dataTable thead .sorting_asc{
                     <div class="form-row align-items-center offer_select_option">
                         <label for="inlineFormCustomSelect" style="margin-bottom:14px">Choose Agent</label>
 
-                        <select data-placeholder="Select an Option" class="custom-select agent" id="agnet"
-                            name="agent">
+                        <select data-placeholder="Select an Option" class="custom-select agent" id="agnet" name="agent">
                             <option></option>
                             @foreach ( $agents as $data )
                             <option value="{{ $data->id }}">
-                                {{ $data->first_name." ".$data->last_name }}</option>
+                                {{ $data->first_name." ".$data->last_name }}
+                            </option>
                             @endforeach
 
                         </select>
@@ -72,8 +70,7 @@ table.dataTable thead .sorting_asc{
                 </div>
                 @endif
                 <div class="col-md-2">
-                    <input type="button" onclick="filter()" value="Search" class="btn btn-success"
-                        style="margin-top:30px">
+                    <input type="button" onclick="filter()" value="Search" class="btn btn-success" style="margin-top:30px">
                 </div>
             </div>
 
@@ -85,19 +82,22 @@ table.dataTable thead .sorting_asc{
 
 
                 <div class="recharge_input_table table-responsive p-0">
-                    <table
-                        class="table table-info table-sm table-bordered table-hover table-head-fixed text-nowrap invoice_table table-striped">
+                    <table class="table table-info table-sm table-bordered table-hover table-head-fixed text-nowrap invoice_table table-striped">
                         <thead>
                             <tr>
                                 @if(Auth::user()->role == 'admin')
                                 <th style="background-color: black;color:white">Reseller</th>
                                 <th style="background-color: black;color:white">Agent</th>
                                 @endif
+
                                 <th style="background-color: black;color:white">Mobile Number</th>
                                 <th style="background-color: black;color:white">Type</th>
                                 <th style="background-color: black;color:white">Status</th>
                                 <th style="background-color: black;color:white">Date</th>
                                 <th style="background-color: black;color:white">Amount</th>
+                                @if(Auth::user()->role != 'agent')
+                                <th style="background-color: black;color:white">Service Charge</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody id='change'>
@@ -115,6 +115,9 @@ table.dataTable thead .sorting_asc{
                                 <th scope="col"></th>
                                 <th scope="col">Total</th>
                                 <th scope="col"></th>
+                                @if(Auth::user()->role != 'agent')
+                                <th scope="col"></th>
+                                @endif
 
                             </tr>
 
@@ -141,174 +144,209 @@ table.dataTable thead .sorting_asc{
 <script src="https://cdn.datatables.net/plug-ins/1.10.25/api/sum().js" type="text/javascript"></script>
 
 <script>
+    $(function() {
+
+        $('.reseller').select2({
+
+            placeholder: function() {
+                $(this).data('placeholder');
+            }
+
+        });
+
+        $('.agent').select2({
+
+            placeholder: function() {
+                $(this).data('placeholder');
+            }
+
+        });
+
+        $(".reseller").change(function() {
+            fetch_table($(".start_date").val(), $(".end_date").val())
+
+        });
+
+        $(".agent").change(function() {
+            fetch_table($(".start_date").val(), $(".end_date").val())
+
+        });
+
+        $("#ExampleSelect").change(function() {
+            fetch_table($(".start_date").val(), $(".end_date").val())
+
+        });
 
 
-$(function() {
-
-    $('.reseller').select2({
-
-    placeholder: function(){
-        $(this).data('placeholder');
-    }
-
-    });
-
-    $('.agent').select2({
-
-placeholder: function(){
-    $(this).data('placeholder');
-}
-
-});
-
-    $(".reseller").change(function(){
-        fetch_table($(".start_date").val(),$(".end_date").val())
-
-    });
-
-    $(".agent").change(function(){
-        fetch_table($(".start_date").val(),$(".end_date").val())
-
-    });
-
-    $("#ExampleSelect").change(function(){
-        fetch_table($(".start_date").val(),$(".end_date").val())
-
-    });
-
-
-    $.ajaxSetup({
+        $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
 
-  var start = moment().subtract(29, 'days');
-  var end = moment();
-  $(".start_date").val(start.format('YYYY-MM-DD'));
-  $(".end_date").val(end.format('YYYY-MM-DD'));
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+        $(".start_date").val(start.format('YYYY-MM-DD'));
+        $(".end_date").val(end.format('YYYY-MM-DD'));
 
 
 
-  $('input[name="daterange"]').daterangepicker({
-    startDate: start,
-    endDate: end,
-    ranges: {
-       'Today': [moment(), moment()],
-       'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-       'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-       'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-       'This Month': [moment().startOf('month'), moment().endOf('month')],
-       'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-    }
-  }, function(start, end, label) {
-
-     $(".start_date").val(start.format('YYYY-MM-DD'));
-     $(".end_date").val(end.format('YYYY-MM-DD'));
-
-     fetch_table($(".start_date").val(),$(".end_date").val());
-  });
-
-    fetch_table($(".start_date").val(),$(".end_date").val())
-
-
-});
-
-function filter()
-{
-
-    fetch_table($(".start_date").val(),$(".end_date").val())
-}
-
-function fetch_table(start_date,end_date)
-{
-
-    var user_role = $("#user_role").val();
-
-    var table = $('.invoice_table').DataTable();
-    //console.log(table.column( 5 ).data().sum());
-    table.destroy();
-
-    var table = $('.invoice_table').DataTable({
-
-
-        processing: true,
-        serverSide: true,
-
-        ordering:false,
-        searchPanes: {
-            orderable: false
-        },
-        dom: 'Plfrtip',
-        language: {
-        processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'
-        },
-        columnDefs: [
-    { "orderable": false, "targets": "_all" } // Applies the option to all columns
-  ],
-        ajax: {
-
-            "url":'get_all_report',
-            "type":'POST',
-            dataSrc: function ( data ) {
-             if(data.data.length != 0){
-              total_cost = data.data[0].total_cost
-           }
-           else{
-            total_cost = 0;
-           }
-           return data.data;
-
-         },
-            "data":{
-                'start_date':$(".start_date").val(),
-                'end_date':$(".end_date").val(),
-                'type':$('#ExampleSelect option:selected').val(),
-                'retailer_id':$('#reseller option:selected').val(),
-                'agent_id':$('#agent option:selected').val()
-
+        $('input[name="daterange"]').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             }
+        }, function(start, end, label) {
 
+            $(".start_date").val(start.format('YYYY-MM-DD'));
+            $(".end_date").val(end.format('YYYY-MM-DD'));
 
-            },
-        deferRender: true,
-        columns: [
-            //   {data: 'sl_no'},
-            @if(Auth::user()->role == 'admin')
-            {data:'reseller_name',name:'reseller_name',orderable:false},
-            {data:'agent_name',name:'agent_name',orderable:false},
-            @endif
-            {data:'mobile_number',name:'mobile_number'},
-            {data:'type',name:'type'},
-            {data:'status',name:'status'},
-            {data:'date',name:'date'},
-            {data:'amount',name:'amount'},
+            fetch_table($(".start_date").val(), $(".end_date").val());
+        });
 
-            ],
-
-
-  drawCallback: function () {
-            var api = this.api();
-
-      @if(Auth::user()->role == 'admin')
-        $( api.column( 6 ).footer() ).html(
-          total_cost
-            );
-
-        @else
-        $( api.column( 4 ).footer() ).html(
-          total_cost
-            );
-
-        @endif
-
-            //datatable_sum(api, false);
-        }
+        fetch_table($(".start_date").val(), $(".end_date").val())
 
 
     });
 
+    function filter() {
 
-}
+        fetch_table($(".start_date").val(), $(".end_date").val())
+    }
+
+    function fetch_table(start_date, end_date) {
+
+        var user_role = $("#user_role").val();
+
+        var table = $('.invoice_table').DataTable();
+        //console.log(table.column( 5 ).data().sum());
+        table.destroy();
+
+        var table = $('.invoice_table').DataTable({
+
+
+            processing: true,
+            serverSide: true,
+
+            ordering: false,
+            searchPanes: {
+                orderable: false
+            },
+            dom: 'Plfrtip',
+            language: {
+                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'
+            },
+            columnDefs: [{
+                    "orderable": false,
+                    "targets": "_all"
+                } // Applies the option to all columns
+            ],
+            ajax: {
+
+                "url": 'get_all_report',
+                "type": 'POST',
+                dataSrc: function(data) {
+                    if (data.data.length != 0) {
+                        total_cost = data.data[0].total_cost
+                        total_service_charge = data.data[0].total_service_charge
+                    } else {
+                        total_cost = 0;
+                    }
+                    return data.data;
+
+                },
+                "data": {
+                    'start_date': $(".start_date").val(),
+                    'end_date': $(".end_date").val(),
+                    'type': $('#ExampleSelect option:selected').val(),
+                    'retailer_id': $('#reseller option:selected').val(),
+                    'agent_id': $('#agent option:selected').val()
+
+                }
+
+
+            },
+            deferRender: true,
+            columns: [
+                //   {data: 'sl_no'},
+                @if(Auth::user()->role == 'admin') {
+                    data: 'reseller_name',
+                    name: 'reseller_name',
+                    orderable: false
+                },
+                {
+                    data: 'agent_name',
+                    name: 'agent_name',
+                    orderable: false
+                },
+                @endif {
+                    data: 'mobile_number',
+                    name: 'mobile_number'
+                },
+                {
+                    data: 'type',
+                    name: 'type'
+                },
+                {
+                    data: 'status',
+                    name: 'status'
+                },
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'amount',
+                    name: 'amount'
+                },
+                @if(Auth::user()->role != 'agent') {
+                    data: 'service_charge',
+                    name: 'service_charge'
+                }
+                @endif
+
+
+            ],
+
+
+            drawCallback: function() {
+                var api = this.api();
+
+                @if(Auth::user()->role == 'admin')
+                $(api.column(6).footer()).html(
+                    total_cost
+                );
+
+                $(api.column(7).footer()).html(
+                    total_service_charge
+                );
+
+                @else
+                $(api.column(4).footer()).html(
+                    total_cost
+                );
+
+                @endif
+
+                @if(Auth::user()->role == 'reseller')
+                $(api.column(5).footer()).html(
+                    total_service_charge
+                );
+                @endif
+
+                //datatable_sum(api, false);
+            }
+
+
+        });
+
+
+    }
 </script>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
@@ -19,18 +20,18 @@ class AuthController extends Controller
         $credentials = [
             'email' => $req->email,
             'password' => $req->password,
-            'pin' => $req->pin,
         ];
+        $user = User::where('email', $req->email)->first();
+        if (!Hash::check($req->pin, $user->pin)) {
+            return redirect("login")->withError('Pin is not valid');
+        }
         if (Auth::attempt($credentials)) {
-            $user = User::where('email', $req->email)->first();
-
             Session::put('api_token', $user->createToken("API TOKEN")->plainTextToken);
             return redirect()->intended('/')
                 ->withSuccess('Signed in');
         }
 
-        return redirect("login")->withError('Login informations are not valid');
-
+        return redirect("login")->withError('Email and password are not valid');
     }
     public function logout()
     {

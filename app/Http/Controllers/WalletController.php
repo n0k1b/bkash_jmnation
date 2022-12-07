@@ -16,7 +16,9 @@ class WalletController extends Controller
     //
     public function index()
     {
-        return view('wallet-request');
+        $agents = User::where('role', 'agent')->where('status', 1)->get();
+
+        return view('wallet-request', compact('agents'));
     }
 
     public function get_wallet_data_send()
@@ -26,7 +28,7 @@ class WalletController extends Controller
         } else if (Auth::user()->role == 'reseller') {
             $data = Wallet::where('reseller_id', Auth::user()->id)->latest()->get();
         } else {
-            $data = Wallet::where('reseller_id', 2)->latest()->get();
+            $data = Wallet::where('agent_id', Auth::user()->id)->latest()->get();
         }
 
         return Datatables::of($data)
@@ -34,8 +36,8 @@ class WalletController extends Controller
             ->addIndexColumn()
 
             ->addColumn('reseller_name', function ($data) {
-                if (Auth::user()->id == $data->reseller_id) {
-                    return '';
+                if ($data->agent_id) {
+                    return $data->agent ? $data->agent->first_name . " " . $data->agent->last_name : '';
                 }
                 return $data->user ? $data->user->first_name . " " . $data->user->last_name : '';
 
@@ -55,7 +57,7 @@ class WalletController extends Controller
 
             })
             ->addColumn('status', function ($data) {
-                $status = $data->status == "pending" ? "badge-warning" : ($data->status == "confirm" ? "badge-success" : "badge-danger");
+                $status = $data->status == "pending" ? "badge-warning" : ($data->status == "accepted" ? "badge-success" : "badge-danger");
                 $text = '<label class="badge ' . $status . '">' . $data->status . '</label>';
                 return $text;
 
@@ -63,7 +65,7 @@ class WalletController extends Controller
 
             ->addColumn('request_type', function ($data) {
 
-                if (Auth::user()->id == $data->reseller_id) {
+                if ($data->agent_id) {
                     $status = "badge-danger";
                     $type = "Send";
                 } else {
@@ -72,7 +74,8 @@ class WalletController extends Controller
                 }
 
                 $text = '<label class="badge ' . $status . '">' . $type . '</label>';
-                return $text;;
+                return $text;
+                ;
 
             })
 
@@ -83,7 +86,7 @@ class WalletController extends Controller
             })
 
             ->addColumn('action', function ($data) {
-                if (Auth::user()->id == $data->reseller_id) {
+                if ($data->agent_id && Auth::user()->role != 'agent') {
                     $button = '';
                 } else if ($data->status != 'pending') {
                     $button = '';
@@ -106,12 +109,14 @@ class WalletController extends Controller
     public function submit_wallet_request(Request $request)
     {
 
+        Log::info('called');
         $path = $request->document->store('image/paymentSlip', 'public');
         try {
             $wallet_request = Wallet::create([
                 'reseller_id' => Auth::user()->id,
                 'amount' => $request->amount,
                 'document' => $path,
+                'agent_id' => $request->agent_id ?: null,
 
             ]);
         } catch (Throwable $th) {
@@ -124,17 +129,18 @@ class WalletController extends Controller
         try {
 
             $wallet = Wallet::find($request->id);
-            $wallet->status = 'confirm';
+            $wallet->status = 'accepted';
             $wallet->accepted_date = Carbon::now();
             $wallet->save();
 
-            $user = User::find($wallet->reseller_id);
-
-            if (Auth::user()->role == 'agent') {
+            if ($wallet->agent_id) {
+                $user = User::find($wallet->agent_id);
                 $user->wallet = $user->wallet - $wallet->amount;
             } else {
+                $user = User::find($wallet->reseller_id);
                 $user->wallet = $user->wallet + $wallet->amount;
             }
+
             $user->save();
 
         } catch (Throwable $th) {
