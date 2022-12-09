@@ -22,6 +22,9 @@ class AuthController extends Controller
             'password' => $req->password,
         ];
         $user = User::where('email', $req->email)->first();
+        if (!$user) {
+            return redirect("login")->withError('Email is not valid');
+        }
         if (!Hash::check($req->pin, $user->pin)) {
             return redirect("login")->withError('Pin is not valid');
         }

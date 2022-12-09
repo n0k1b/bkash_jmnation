@@ -21,10 +21,15 @@ class WalletController extends Controller
         return view('wallet-request', compact('agents'));
     }
 
-    public function get_wallet_data_send()
+    public function get_wallet_data_send(Request $request)
     {
         if (Auth::user()->role == 'admin') {
-            $data = Wallet::latest()->get();
+            if ($request->report_type == 'reseller') {
+                $data = Wallet::whereNull('agent_id')->latest()->get();
+            } else {
+                $data = Wallet::whereNotNull('agent_id')->latest()->get();
+            }
+
         } else if (Auth::user()->role == 'reseller') {
             $data = Wallet::where('reseller_id', Auth::user()->id)->latest()->get();
         } else {

@@ -14,8 +14,31 @@
         background-image: none !important;
     }
 </style>
-
 <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+
+            <div class="row" style="margin-left:10px;margin-top:20px">
+
+                <div class="col-md-3" >
+                    <select  class="form-control report_type" name="report_type"
+                        id="report_type">
+                       <option value="reseller">Reseller</option>
+                       <option value="agent">Agent</option>
+                    </select>
+                </div>
+
+
+
+            </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
     <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-header">
@@ -167,6 +190,11 @@
 
         });
 
+        $(".report_type").change(function() {
+            fetch_table($(".start_date").val(), $(".end_date").val())
+
+        });
+
         $(".agent").change(function() {
             fetch_table($(".start_date").val(), $(".end_date").val())
 
@@ -267,7 +295,8 @@
                     'end_date': $(".end_date").val(),
                     'type': $('#ExampleSelect option:selected').val(),
                     'retailer_id': $('#reseller option:selected').val(),
-                    'agent_id': $('#agent option:selected').val()
+                    'agent_id': $('#agent option:selected').val(),
+                    'report_type': $('#report_type option:selected').val()
 
                 }
 

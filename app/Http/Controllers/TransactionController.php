@@ -62,7 +62,7 @@ class TransactionController extends Controller
             $pendingTransaction = transaction::where('reseller_id', Auth::user()->id)->where('status', 'pending')->sum('amount');
             if ($pendingTransaction + $request->amount > Auth::user()->wallet) {
                 return back()->withError("Transaction Not Created! Wallet Credit Exceeded")->withInput();
-                ;
+
             }
 
             $transaction = new transaction();
@@ -232,7 +232,7 @@ class TransactionController extends Controller
             $currentCount = $transactionMapAgent->pass_count;
             TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->update([
                 'status' => 'passed',
-                'pass_count' => $currentCount + 1
+                'pass_count' => $currentCount + 1,
             ]);
             return $this->successJsonResponse("Transaction Information Passed!", $transaction);
         } catch (Throwable $th) {
@@ -259,7 +259,7 @@ class TransactionController extends Controller
     }
     public function get_all_report(Request $request)
     {
-
+        Log::info($request->report_type);
         $start_date = Carbon::parse($request->start_date)->toDateTimeString();
         $end_date = Carbon::parse($request->end_date)->addDays(1)->toDateTimeString();
         $reseller_id = $request->retailer_id;

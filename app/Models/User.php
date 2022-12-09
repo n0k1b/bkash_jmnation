@@ -10,6 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
+    protected $appends = [
+        'reseller_wallet',
+        'agent_wallet',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -40,4 +44,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getResellerWalletAttribute()
+    {
+        $total_wallet = User::where('role', 'reseller')->sum('wallet');
+        return $total_wallet;
+    }
+
+    public function getAgentWalletAttribute()
+    {
+        $total_wallet = User::where('role', 'agent')->sum('wallet');
+        return $total_wallet;
+    }
+
 }

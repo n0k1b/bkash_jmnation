@@ -18,6 +18,30 @@
 <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
+            <div class="card-body">
+
+            <div class="row" style="margin-left:10px;margin-top:20px">
+
+                <div class="col-md-3" >
+                    <select  class="form-control report_type" name="report_type"
+                        id="report_type">
+                       <option value="reseller">Reseller</option>
+                       <option value="agent">Agent</option>
+                    </select>
+                </div>
+
+
+
+            </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
             <div class="card-header">
                 <h3 class="card-title"><i class="fas fa-list" style="margin-right: 10px;"></i>
                     <strong>Wallet Request</strong>
@@ -141,6 +165,12 @@
             }
 
         });
+
+        $(".report_type").change(function() {
+            fetch_table()
+
+        });
+
 
         $.ajaxSetup({
             headers: {
@@ -376,7 +406,11 @@
             ajax: {
 
                 "url": 'get_wallet_data_send',
-                "type": 'get'
+                "type": 'POST',
+                "data": {
+                    'report_type': $('#report_type option:selected').val()
+
+                }
             },
             deferRender: true,
             columns: [

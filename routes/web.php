@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 // Route::get('/', function () {
 //     return view('dashboard');
@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('get_all_report', 'TransactionController@get_all_report')->name('get_all_report');
     Route::get('changeStatus', 'TransactionController@changeStatus');
     Route::get('wallet_request', 'WalletController@index');
-    Route::get('get_wallet_data_send', 'WalletController@get_wallet_data_send');
+    Route::post('get_wallet_data_send', 'WalletController@get_wallet_data_send');
     Route::post('submit_wallet_request', 'WalletController@submit_wallet_request');
     Route::post('accept_wallet_request', 'WalletController@accept_wallet_request');
     Route::post('decline_wallet_request', 'WalletController@decline_wallet_request');
