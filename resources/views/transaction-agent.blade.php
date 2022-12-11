@@ -286,11 +286,12 @@
             .catch(err => console.log(err));
     }
     saveTransaction = () => {
+        if(!$('#transaction_no').val()){
+            alert('Transaction No Filed is Required')
+            return
+        }
         var formData = new FormData()
         formData.append('transactionId', transactionId)
-
-
-
         formData.append('transactionNo', $('#transaction_no').val())
         axios.post(base_url + '/api/saveTransaction', formData, config)
             .then(res => {

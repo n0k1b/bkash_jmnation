@@ -139,12 +139,14 @@ class TransactionController extends Controller
             $existing_record = TransactionMapAgent::where('status', '!=', 'complete')->where('agent_id', $userId)->where('pass_count', 1)->first();
             if ($existing_record) {
                 $transaction = transaction::find($existing_record->transaction_id);
-                $transaction->status = 'locked';
-                $transaction->save();
-                TransactionMapAgent::where('transaction_id', $transaction->id)->where('agent_id', $userId)->update([
-                    'status' => 'pending',
-                ]);
-                return $this->successJsonResponse("Transaction Information Found!", $transaction);
+                if ($transaction->status == 'pending') {
+                    $transaction->status = 'locked';
+                    $transaction->save();
+                    TransactionMapAgent::where('transaction_id', $transaction->id)->where('agent_id', $userId)->update([
+                        'status' => 'pending',
+                    ]);
+                    return $this->successJsonResponse("Transaction Information Found!", $transaction);
+                }
             }
             return $this->errorJsonResponse("Transaction Information Not Found!!");
 
