@@ -7,74 +7,86 @@
         height: 224px;
     }
 
-</style>
-@if(\Session::has('error'))
-    <div class="alert alert-danger">
-        <ul>
-            <li>{!! \Session::get('error') !!}</li>
-        </ul>
-    </div>
-@endif
+    .switch {
+    position: relative;
+    display: inline-block;
+    width: 43px;
+    height: 21px;
+    }
+    .round{
+        padding: 10px;
+        color:black;
+    }
+    select2-container {
+    z-index:10050;
+}
+    .slider:before {
 
-@if(\Session::has('success'))
-    <div class="alert alert-success">
-        <ul>
-            <li>{!! \Session::get('success') !!}</li>
-        </ul>
-    </div>
-@endif
+    position: absolute;
+    content: "";
+    height: 19px;
+    width: 16px;
+    left: 1px;
+    bottom: 1px;
+
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+    table.dataTable thead .sorting_asc {
+        background-image: none !important;
+    }
+
+</style>
 
 <div class="row">
+
     <div class="col-lg-12 grid-margin stretch-card">
-        <div class="card mt-3">
-            <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-list" style="margin-right: 10px;"></i><strong>User
-                        Action</strong></h3>
+        <div class="card">
 
-                <div class="card-tools retailer_active_search">
-                    <div class="input-group input-group-sm" style="width: 150px;">
-                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+            <div class="p-3">
 
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-default">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body table-responsive p-0">
-                <table class="table table-bordered table-sm table-hover table-head-fixed text-nowrap text-center">
-                    <thead>
-                        <tr>
-                            <th style="background: #faaeae;">Name</th>
-                            <th style="background: #faaeae;">Email</th>
-                            <th style="background: #faaeae;">Status</th>
-
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($data as $retailer)
-                            <tr class="bg-ocean">
-                                <td>{{ $retailer->first_name.' '.$retailer->last_name }}</td>
-                                <td>{{ $retailer->email }}</td>
-                                <td>
-                                <input data-id="{{$retailer->id}}" class="toggle-class recharge" type="checkbox" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-on="Active" data-off="Inactive" {{ $retailer->recharge_permission ? 'checked' : '' }}>
-                              </td>
-
+                <div class="recharge_input_table table-responsive p-0">
+                    <table id="datatable"
+                        class="table table-info table-sm table-bordered table-hover table-head-fixed text-nowrap invoice_table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="background-color: black;color:white">Name</th>
+                                <th style="background-color: black;color:white">Email</th>
+                                <th style="background-color: black;color:white">Wallet</th>
+                                <th style="background-color: black;color:white">Status</th>
 
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($data as $d )
+                                <tr>
+                                <?php
+$checked = $d->status == '1' ? 'checked' : '';
+?>
+                                    <td>{{ $d->first_name.' '.$d->last_name }}</td>
+                                    <td>{{ $d->email }}</td>
+                                    <td>{{ $d->wallet }}</td>
+                                    <td>
+                                        <label class="switch">
+                                            <input type="checkbox" onclick="user_active_status({{ $d->id }})"
+                                                {{ $checked }} />
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+
+                        </tbody>
+
+
+
+                    </table>
+                </div>
             </div>
-            <!-- /.card-body -->
         </div>
     </div>
-
 
 </div>
 
@@ -83,32 +95,29 @@
 @section('page-js')
 
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
+<script src="https://unpkg.com/izitoast/dist/js/iziToast.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.25/api/sum().js" type="text/javascript"></script>
+
 <script>
-$(function() {
-    $('.recharge').bootstrapToggle();
-  $('.recharge').change(function() {
+    $(function () {
+        $('#datatable').DataTable();
+    })
 
-      var check = 0;
-      var status = $(this).prop('checked') == true ? 1 : 0;
-      var user_id = $(this).data('id');
-      $.ajax({
-          type: "GET",
-          dataType: "json",
-          url: 'changeStatus',
-          data: {'status': status, 'user_id': user_id},
-          success: function(data){
+    function user_active_status(id) {
+    $.ajax({
+        processData: false,
+        contentType: false,
+        type: 'GET',
+        url: 'user_active_status_update/' + id,
+        success: function(data) {
 
-              if(data.message =='error')
-              {
-                 // $(this).prop('unchecked')
-                  $('.recharge').bootstrapToggle('off')
 
-                  // alert('You do not have this access')
-              }
-          }
-      });
-  })
-})
+        }
+    })
+}
+
 </script>

@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('accept_wallet_request', 'WalletController@accept_wallet_request');
     Route::post('decline_wallet_request', 'WalletController@decline_wallet_request');
     Route::post('delete_transaction', 'TransactionController@deleteTransaction');
-    Route::get('user', 'UserController@index');
+    Route::get('user/{type}', 'UserController@index');
+    Route::get('user_active_status_update/{id}', 'UserController@user_active_status_update');
 
 });
