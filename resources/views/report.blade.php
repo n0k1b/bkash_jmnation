@@ -124,11 +124,12 @@
                                 @endif
 
                                 @if(Auth::user()->role == 'agent')
-                                <th style="background-color: black;color:white">Profit</th>
+                                <th style="background-color: black;color:white">Agent Profit</th>
                                 @endif
 
                                 @if(Auth::user()->role == 'admin')
-                                <th style="background-color: black;color:white">Profit</th>
+                                <th style="background-color: black;color:white">Admin Profit</th>
+                                <th style="background-color: black;color:white">Agent Profit</th>
                                 @endif
 
                             </tr>
@@ -158,6 +159,7 @@
                                 @endif
 
                                 @if(Auth::user()->role == 'admin')
+                                <th scope="col"></th>
                                 <th scope="col"></th>
                                 @endif
 
@@ -382,6 +384,10 @@
                     data: 'admin_profit',
                     name: 'admin_profit'
                 },
+                {
+                    data: 'agent_profit',
+                    name: 'agent_profit'
+                },
                 @endif
 
 
@@ -402,6 +408,10 @@
 
                 $(api.column(9).footer()).html(
                     total_admin_profit
+                );
+
+                $(api.column(10).footer()).html(
+                    total_agent_profit
                 );
 
 
