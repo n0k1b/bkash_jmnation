@@ -203,6 +203,14 @@ class TransactionController extends Controller
             $transaction->status = 'complete';
             $transaction->agent_id = $userId;
             $transaction->transaction_id = $tranasactionNo;
+
+            $transaction_no = date('dmYHis') . str_pad($userId, 4, "0", STR_PAD_LEFT);
+            $agent_profit = ($transaction->amount * 0.004) * 0.5;
+            $admin_profit = (($transaction->amount * 0.004) * 0.5) + ($transaction->amount * 0.025);
+
+            $transaction->transaction_no = $transaction_no;
+            $transaction->agent_profit = $agent_profit;
+            $transaction->admin_profit = $admin_profit;
             $transaction->save();
             TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->update([
                 'status' => 'complete',
@@ -286,10 +294,12 @@ class TransactionController extends Controller
             $total_cost = $data->sum('amount');
             $total_service_charge = $data->sum('service_charge');
             $total_agent_profit = $data->sum('agent_profit');
+            $total_admin_profit = $data->sum('admin_profit');
             if (sizeof($data) > 0) {
                 $data[0]['total_cost'] = round($total_cost, 2);
                 $data[0]['total_service_charge'] = round($total_service_charge, 2);
                 $data[0]['total_agent_profit'] = round($total_agent_profit, 2);
+                $data[0]['total_admin_profit'] = round($total_admin_profit, 2);
             }
             return Datatables::of($data)
 

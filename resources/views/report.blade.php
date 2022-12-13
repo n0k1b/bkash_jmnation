@@ -114,6 +114,7 @@
                                 @endif
 
                                 <th style="background-color: black;color:white">Mobile Number</th>
+                                <th style="background-color: black;color:white">Transaction No</th>
                                 <th style="background-color: black;color:white">Type</th>
                                 <th style="background-color: black;color:white">Status</th>
                                 <th style="background-color: black;color:white">Date</th>
@@ -123,6 +124,10 @@
                                 @endif
 
                                 @if(Auth::user()->role == 'agent')
+                                <th style="background-color: black;color:white">Profit</th>
+                                @endif
+
+                                @if(Auth::user()->role == 'admin')
                                 <th style="background-color: black;color:white">Profit</th>
                                 @endif
 
@@ -141,6 +146,7 @@
                                 <th scope="col"></th>
                                 <th scope="col"></th>
                                 <th scope="col"></th>
+                                <th scope="col"></th>
                                 <th scope="col">Total</th>
                                 <th scope="col"></th>
                                 @if(Auth::user()->role != 'agent')
@@ -148,6 +154,10 @@
                                 @endif
 
                                 @if(Auth::user()->role == 'agent')
+                                <th scope="col"></th>
+                                @endif
+
+                                @if(Auth::user()->role == 'admin')
                                 <th scope="col"></th>
                                 @endif
 
@@ -294,10 +304,14 @@
                         total_cost = data.data[0].total_cost
                         total_service_charge = data.data[0].total_service_charge
                         total_agent_profit = data.data[0].total_agent_profit
+                        total_admin_profit = data.data[0].total_admin_profit
                     } else {
                         total_cost = 0
                         total_agent_profit = 0
                         total_service_charge = 0
+                        total_admin_profit = 0
+
+
                     }
                     return data.data;
 
@@ -327,9 +341,14 @@
                     name: 'agent_name',
                     orderable: false
                 },
-                @endif {
+                @endif
+                {
                     data: 'mobile_number',
                     name: 'mobile_number'
+                },
+                {
+                    data: 'transaction_no',
+                    name: 'transaction_no'
                 },
                 {
                     data: 'type',
@@ -350,13 +369,19 @@
                 @if(Auth::user()->role != 'agent') {
                     data: 'service_charge',
                     name: 'service_charge'
-                }
+                },
                 @endif
 
                 @if(Auth::user()->role == 'agent') {
                     data: 'agent_profit',
                     name: 'agent_profit'
-                }
+                },
+                @endif
+
+                @if(Auth::user()->role == 'admin' ) {
+                    data: 'admin_profit',
+                    name: 'admin_profit'
+                },
                 @endif
 
 
@@ -367,29 +392,34 @@
                 var api = this.api();
 
                 @if(Auth::user()->role == 'admin')
-                $(api.column(6).footer()).html(
+                $(api.column(7).footer()).html(
                     total_cost
                 );
 
-                $(api.column(7).footer()).html(
+                $(api.column(8).footer()).html(
                     total_service_charge
                 );
 
+                $(api.column(9).footer()).html(
+                    total_admin_profit
+                );
+
+
                 @else
-                $(api.column(4).footer()).html(
+                $(api.column(5).footer()).html(
                     total_cost
                 );
 
                 @endif
 
                 @if(Auth::user()->role == 'reseller')
-                $(api.column(5).footer()).html(
+                $(api.column(6).footer()).html(
                     total_service_charge
                 );
                 @endif
 
                 @if(Auth::user()->role == 'agent')
-                $(api.column(5).footer()).html(
+                $(api.column(6).footer()).html(
                     total_agent_profit
                 );
                 @endif
