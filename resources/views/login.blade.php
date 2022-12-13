@@ -7,17 +7,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>SL PLAY</title>
-    <!-- plugins:css -->
     <link rel="stylesheet"
         href="{{ asset('assets/melody') }}/vendors/iconfonts/font-awesome/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/css/vendor.bundle.base.css">
-    <link rel="stylesheet" href="{{ asset('assets/melody') }}/vendors/css/vendor.bundle.addons.css">
-    <!-- endinject -->
-    <!-- plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
     <link rel="stylesheet" href="{{ asset('assets/melody') }}/css/style.css">
-    <!-- endinject -->
+
     <link rel="shortcut icon" href="images/favicon.png" />
 </head>
 
@@ -80,7 +74,7 @@
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="{{ asset('assets/melody') }}/vendors/js/vendor.bundle.base.js"></script>
-    <script src="{{ asset('assets/melody') }}/vendors/js/vendor.bundle.addons.js"></script>
+
     <!-- endinject -->
     <!-- Plugin js for this page-->
     <!-- End plugin js for this page-->
