@@ -261,7 +261,7 @@ class TransactionController extends Controller
     }
     public function get_all_report(Request $request)
     {
-        Log::info($request->report_type);
+
         $start_date = Carbon::parse($request->start_date)->toDateTimeString();
         $end_date = Carbon::parse($request->end_date)->addDays(1)->toDateTimeString();
         $reseller_id = $request->retailer_id;
@@ -285,9 +285,11 @@ class TransactionController extends Controller
             }
             $total_cost = $data->sum('amount');
             $total_service_charge = $data->sum('service_charge');
+            $total_agent_profit = $data->sum('agent_profit');
             if (sizeof($data) > 0) {
                 $data[0]['total_cost'] = round($total_cost, 2);
                 $data[0]['total_service_charge'] = round($total_service_charge, 2);
+                $data[0]['total_agent_profit'] = round($total_agent_profit, 2);
             }
             return Datatables::of($data)
 

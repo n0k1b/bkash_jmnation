@@ -121,6 +121,11 @@
                                 @if(Auth::user()->role != 'agent')
                                 <th style="background-color: black;color:white">Service Charge</th>
                                 @endif
+
+                                @if(Auth::user()->role == 'agent')
+                                <th style="background-color: black;color:white">Profit</th>
+                                @endif
+
                             </tr>
                         </thead>
                         <tbody id='change'>
@@ -139,6 +144,10 @@
                                 <th scope="col">Total</th>
                                 <th scope="col"></th>
                                 @if(Auth::user()->role != 'agent')
+                                <th scope="col"></th>
+                                @endif
+
+                                @if(Auth::user()->role == 'agent')
                                 <th scope="col"></th>
                                 @endif
 
@@ -284,8 +293,11 @@
                     if (data.data.length != 0) {
                         total_cost = data.data[0].total_cost
                         total_service_charge = data.data[0].total_service_charge
+                        total_agent_profit = data.data[0].total_agent_profit
                     } else {
-                        total_cost = 0;
+                        total_cost = 0
+                        total_agent_profit = 0
+                        total_service_charge = 0
                     }
                     return data.data;
 
@@ -341,6 +353,12 @@
                 }
                 @endif
 
+                @if(Auth::user()->role == 'agent') {
+                    data: 'agent_profit',
+                    name: 'agent_profit'
+                }
+                @endif
+
 
             ],
 
@@ -367,6 +385,12 @@
                 @if(Auth::user()->role == 'reseller')
                 $(api.column(5).footer()).html(
                     total_service_charge
+                );
+                @endif
+
+                @if(Auth::user()->role == 'agent')
+                $(api.column(5).footer()).html(
+                    total_agent_profit
                 );
                 @endif
 
