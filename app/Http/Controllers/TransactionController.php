@@ -69,6 +69,9 @@ class TransactionController extends Controller
             $transaction->reseller_id = auth()->user()->id;
             $transaction->amount = $request->amount;
             $transaction->type = $request->type;
+
+            $transaction_no = date('dmYHis') . str_pad(auth()->user()->id, 4, "0", STR_PAD_LEFT);
+            $transaction->transaction_no = $transaction_no;
             $transaction->account_type = $request->account_type;
             $transaction->mobile_number = $request->mobile_number;
             $transaction->service_charge = $request->service_charge ?: null;
@@ -204,11 +207,8 @@ class TransactionController extends Controller
             $transaction->agent_id = $userId;
             $transaction->transaction_id = $tranasactionNo;
 
-            $transaction_no = date('dmYHis') . str_pad($userId, 4, "0", STR_PAD_LEFT);
             $agent_profit = ($transaction->amount * 0.004) * 0.5;
             $admin_profit = (($transaction->amount * 0.004) * 0.5) + ($transaction->amount * 0.025);
-
-            $transaction->transaction_no = $transaction_no;
             $transaction->agent_profit = $agent_profit;
             $transaction->admin_profit = $admin_profit;
             $transaction->save();
