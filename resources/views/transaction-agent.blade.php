@@ -81,8 +81,14 @@
         $('#transaction_record').hide()
         fetchAllTransaction()
     })
-    const base_url = 'https://slplay.xyz';
-    //const base_url = 'http://bkash_copy.test';
+    const env = '{{env('APP_ENV')}}'
+    var base_url = ''
+    if(env === 'local'){
+        base_url = 'https://bkash_copy.test';
+    }
+    else{
+        base_url = 'https://slplay.xyz';
+    }
     const token = "{{ Session::get('api_token') }}";
     const config = {
         headers: { Authorization: `Bearer ${token}` }

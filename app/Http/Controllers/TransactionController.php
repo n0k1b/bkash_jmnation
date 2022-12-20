@@ -139,7 +139,7 @@ class TransactionController extends Controller
     {
         try {
             $userId = auth('sanctum')->user()->id;
-            $existing_record = TransactionMapAgent::where('status', '!=', 'complete')->where('agent_id', $userId)->where('pass_count', 1)->first();
+            $existing_record = TransactionMapAgent::where('status', '!=', 'complete')->where('agent_id', $userId)->orderBy('pass_count', 'ASC')->first();
             if ($existing_record) {
                 $transaction = transaction::find($existing_record->transaction_id);
                 if ($transaction->status == 'pending') {

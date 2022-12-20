@@ -228,6 +228,8 @@
 
   <!-- plugins:js -->
   <script src="{{ asset('assets/melody') }}/vendors/js/vendor.bundle.base.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 
   <!-- endinject -->
   <!-- Custom js for this page-->
