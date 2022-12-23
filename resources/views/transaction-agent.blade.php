@@ -14,13 +14,13 @@
     </h3>
 </div>
 <div class="row">
-    <div class="col-lg-6 grid-margin stretch-card">
+    <div class="col-lg-4 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <div class="text-center">
                     <button type="button" class="btn btn-primary btn-rounded btn-fw"
                         onclick="fetchNewTransaction()">Fetch New Transaction</button>
-                    <button type="button" class="btn btn-success btn-rounded btn-fw"
+                    <button type="button" class="btn btn-success btn-rounded btn-fw" style="margin-top: 10px;"
                         onclick="fetchPassTransaction()">Fetch Pass Transaction</button>
                 </div>
                 <div class="text-center">
@@ -33,7 +33,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6 grid-margin stretch-card">
+    <div class="col-lg-8 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Last 10 Transaction</h4>
@@ -150,6 +150,14 @@
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Last Four Digit</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="last_four_digit" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
                                         style="font-size:16px;font-weight:600">Transaction No</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="transaction_no" required>
@@ -236,6 +244,14 @@
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label"
+                                        style="font-size:16px;font-weight:600">Last Four Digit</label>
+                                    <div class="col-sm-9">
+                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="last_four_digit" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"
                                         style="font-size:16px;font-weight:600">Transaction No</label>
                                     <div class="col-sm-9">
                                         <input style="font-size: 14px;font-weight:600" type="text" class="form-control" id="transaction_no" required>
@@ -296,9 +312,21 @@
             alert('Transaction No Filed is Required')
             return
         }
+
+        if(!$('#last_four_digit').val()){
+            alert('Last Four Digit Filed is Required')
+            return
+        }
+
+        if($('#last_four_digit').val().length<4){
+            alert('Last four digit length should be 4')
+            return
+        }
+
         var formData = new FormData()
         formData.append('transactionId', transactionId)
         formData.append('transactionNo', $('#transaction_no').val())
+        formData.append('lastFourDigit', $('#last_four_digit').val())
         axios.post(base_url + '/api/saveTransaction', formData, config)
             .then(res => {
                 const {
@@ -333,8 +361,24 @@
 
 
     passTransaction = () => {
+        if(!$('#transaction_no').val()){
+            alert('Transaction No Filed is Required')
+            return
+        }
+
+        if(!$('#last_four_digit').val()){
+            alert('Last Four Digit Filed is Required')
+            return
+        }
+
+        if($('#last_four_digit').val().length<4){
+            alert('Last four digit length should be 4')
+            return
+        }
         var formData = new FormData()
         formData.append('transactionId', transactionId)
+        formData.append('transactionNo', $('#transaction_no').val())
+        formData.append('lastFourDigit', $('#last_four_digit').val())
         axios.post(base_url + '/api/passTransaction', formData, config)
             .then(res => {
                 const {

@@ -206,6 +206,7 @@ class TransactionController extends Controller
             $transaction->status = 'complete';
             $transaction->agent_id = $userId;
             $transaction->transaction_id = $tranasactionNo;
+            $transaction->last_four_digit = $request->lastFourDigit;
 
             $agent_profit = ($transaction->amount * 0.004) * 0.5;
             $admin_profit = (($transaction->amount * 0.004) * 0.5) + ($transaction->amount * 0.025);

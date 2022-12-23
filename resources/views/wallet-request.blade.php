@@ -14,7 +14,7 @@
         background-image: none !important;
     }
 </style>
-
+@if(auth()->user()->role =='admin')
 <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
@@ -38,6 +38,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">

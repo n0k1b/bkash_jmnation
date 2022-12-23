@@ -14,6 +14,7 @@
         background-image: none !important;
     }
 </style>
+@if(auth()->user()->role =='admin')
 <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
@@ -37,6 +38,7 @@
         </div>
     </div>
 </div>
+@endif
 <div class="row">
 
     <div class="col-lg-12 grid-margin stretch-card">
@@ -115,10 +117,12 @@
 
                                 <th style="background-color: black;color:white">Mobile Number</th>
                                 <th style="background-color: black;color:white">Transaction No</th>
+                                <th style="background-color: black;color:white">Last Digit</th>
                                 <th style="background-color: black;color:white">Type</th>
                                 <th style="background-color: black;color:white">Status</th>
                                 <th style="background-color: black;color:white">Date</th>
                                 <th style="background-color: black;color:white">Amount</th>
+
                                 @if(Auth::user()->role != 'agent')
                                 <th style="background-color: black;color:white">Service Charge</th>
                                 @endif
@@ -144,6 +148,7 @@
                                 <th scope="col"></th>
                                 <th scope="col"></th>
                                 @endif
+                                <th scope="col"></th>
                                 <th scope="col"></th>
                                 <th scope="col"></th>
                                 <th scope="col"></th>
@@ -353,6 +358,10 @@
                     name: 'transaction_no'
                 },
                 {
+                    data: 'last_four_digit',
+                    name: 'last_four_digit'
+                },
+                {
                     data: 'type',
                     name: 'type'
                 },
@@ -368,6 +377,7 @@
                     data: 'amount',
                     name: 'amount'
                 },
+
                 @if(Auth::user()->role != 'agent') {
                     data: 'service_charge',
                     name: 'service_charge'
@@ -398,38 +408,38 @@
                 var api = this.api();
 
                 @if(Auth::user()->role == 'admin')
-                $(api.column(7).footer()).html(
+                $(api.column(8).footer()).html(
                     total_cost
                 );
 
-                $(api.column(8).footer()).html(
+                $(api.column(9).footer()).html(
                     total_service_charge
                 );
 
-                $(api.column(9).footer()).html(
+                $(api.column(10).footer()).html(
                     total_admin_profit
                 );
 
-                $(api.column(10).footer()).html(
+                $(api.column(11).footer()).html(
                     total_agent_profit
                 );
 
 
                 @else
-                $(api.column(5).footer()).html(
+                $(api.column(6).footer()).html(
                     total_cost
                 );
 
                 @endif
 
                 @if(Auth::user()->role == 'reseller')
-                $(api.column(6).footer()).html(
+                $(api.column(7).footer()).html(
                     total_service_charge
                 );
                 @endif
 
                 @if(Auth::user()->role == 'agent')
-                $(api.column(6).footer()).html(
+                $(api.column(7).footer()).html(
                     total_agent_profit
                 );
                 @endif

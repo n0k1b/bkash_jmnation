@@ -29,7 +29,7 @@
     </h3>
 </div>
 <div class="row">
-    <div class="col-lg-6 grid-margin stretch-card">
+    <div class="col-lg-4 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('create_transaction') }}" method="post" enctype="multipart/form-data">
@@ -83,7 +83,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6 grid-margin stretch-card">
+    <div class="col-lg-8 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Last 10 Transaction</h4>
@@ -97,6 +97,7 @@
                                             <th>Number</th>
                                             <th>Type</th>
                                             <th>Amount</th>
+                                            <th>Last Digit</th>
                                             <th>Status</th>
                                             <th></th>
                                         </tr>
@@ -107,6 +108,7 @@
                                             <td>{{ $t->mobile_number }}</td>
                                             <td>{{ $t->type }}</td>
                                             <td>{{ $t->amount }}</td>
+                                            <td>{{ $t->last_four_digit }}</td>
                                             <td><label
                                                     class="badge {{ $t->status=='pending'?'badge-warning':($t->status=='complete'?'badge-success':'badge-danger') }} badge-pill">{{
                                                     $t->status }}</label>
