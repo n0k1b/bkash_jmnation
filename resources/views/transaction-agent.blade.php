@@ -14,7 +14,7 @@
     </h3>
 </div>
 <div class="row">
-    <div class="col-lg-4 grid-margin stretch-card">
+    <div class="col-lg-5 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <div class="text-center">
@@ -33,7 +33,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-8 grid-margin stretch-card">
+    <div class="col-lg-7 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Last 10 Transaction</h4>
@@ -94,6 +94,18 @@
         headers: { Authorization: `Bearer ${token}` }
     };
     let transactionId;
+    function clipboard() {
+
+        var Text = document.getElementById("mobile_number");
+
+  /* Select the text inside text area. */
+  Text.select();
+
+  /* Copy selected text into clipboard */
+  navigator.clipboard.writeText(Text.value);
+        }
+
+
     fetchNewTransaction = () => {
         axios.get(base_url + '/api/getNewTransaction', config)
             .then(res => {
@@ -113,13 +125,17 @@
                             <form class="forms-sample">
 
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label" style="font-size:16px;font-weight:600">Mobile
+                                    <div class="input-group">
+                                    <label class="col-sm-3 col-form-label" style="font-size:16px;font-weight:600">
                                         Number</label>
-                                    <div class="col-sm-9">
-                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                     <input  style="font-size: 14px;font-weight:600" type="text" id="mobile_number" class="form-control"
                                             value="`+ data.mobile_number + `" disabled>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-sm btn-primary btn-copy" type="button" onclick="clipboard()"><i class="fa fa-copy"></i></button>
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label"
@@ -206,12 +222,15 @@
                         <div class="card-body">
                             <form class="forms-sample">
 
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label" style="font-size:16px;font-weight:600">Mobile
+                             <div class="form-group row">
+                                    <div class="input-group">
+                                    <label class="col-sm-3 col-form-label" style="font-size:16px;font-weight:600">
                                         Number</label>
-                                    <div class="col-sm-9">
-                                        <input style="font-size: 14px;font-weight:600" type="text" class="form-control"
+                                     <input  style="font-size: 14px;font-weight:600" type="text" id="mobile_number" class="form-control"
                                             value="`+ data.mobile_number + `" disabled>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-sm btn-primary btn-copy" type="button" onclick="clipboard()"><i class="fa fa-copy"></i></button>
+                                        </div>
                                     </div>
                                 </div>
 
