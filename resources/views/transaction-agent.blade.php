@@ -380,20 +380,7 @@
 
 
     passTransaction = () => {
-        if(!$('#transaction_no').val()){
-            alert('Transaction No Filed is Required')
-            return
-        }
 
-        if(!$('#last_four_digit').val()){
-            alert('Last Four Digit Filed is Required')
-            return
-        }
-
-        if($('#last_four_digit').val().length<4){
-            alert('Last four digit length should be 4')
-            return
-        }
         var formData = new FormData()
         formData.append('transactionId', transactionId)
         formData.append('transactionNo', $('#transaction_no').val())
