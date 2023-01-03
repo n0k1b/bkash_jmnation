@@ -169,6 +169,7 @@ class TransactionController extends Controller
                 ->get()
                 ->toArray();
             if ($existing_record) {
+
                 $transaction = transaction::where('id', $existing_record->transaction_id)->first();
             } else {
                 $transaction = transaction::whereNotIn('id', $passedTransaction)->where('status', 'pending')->latest()->first();
@@ -194,6 +195,25 @@ class TransactionController extends Controller
         }
     }
 
+    public function saveErrorTransaction(Request $request)
+    {
+        try {
+            $userId = auth('sanctum')->user()->id;
+            $transactionId = $request->transactionId;
+            $error_messaege = $request->error_message;
+            $transaction = transaction::find($transactionId);
+            $transaction->error_message = $error_messaege;
+            $transaction->status = 'error';
+            $transaction->save();
+            TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->update([
+                'status' => 'error',
+            ]);
+
+            return $this->successJsonResponse("Transaction Information Updated!", $transaction);
+        } catch (Throwable $th) {
+            return $this->exceptionJsonResponse($th);
+        }
+    }
     public function saveTransaction(Request $request)
     {
 
@@ -255,7 +275,7 @@ class TransactionController extends Controller
     {
         $userId = auth('sanctum')->user()->id;
         try {
-            $transaction = TransactionMapAgent::where('agent_id', $userId)->with('transaction')->get()->toArray();
+            $transaction = TransactionMapAgent::where('agent_id', $userId)->with('transaction')->latest()->get()->toArray();
             return $this->successJsonResponse("Transaction Information Updated!", $transaction);
         } catch (Throwable $th) {
             return $this->exceptionJsonResponse($th);

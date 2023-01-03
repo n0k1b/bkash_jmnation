@@ -80,6 +80,57 @@
     $(function () {
         $('#transaction_record').hide()
         fetchAllTransaction()
+        var toast = document.querySelector('.iziToast');
+        var message = sessionStorage.getItem('message');
+        sessionStorage.removeItem('message');
+
+        if (toast) {
+            iziToast.hide({}, toast);
+        }
+        if (sessionStorage.getItem('error')) {
+            sessionStorage.removeItem('error');
+
+            iziToast.error({
+                backgroundColor: "#D12C09",
+                messageColor: 'white',
+                iconColor: 'white',
+                titleColor: 'white',
+                titleSize: '18',
+                messageSize: '18',
+                color: 'white',
+                position: 'topCenter',
+                timeout: 30000,
+                title: 'Error',
+                message: message,
+
+
+            });
+
+            //console.log(response.message);
+
+        }
+
+        if (sessionStorage.getItem('success')) {
+            sessionStorage.removeItem('success');
+
+
+            iziToast.success({
+                backgroundColor: "Green",
+                messageColor: 'white',
+                iconColor: 'white',
+                titleColor: 'white',
+                titleSize: '18',
+                messageSize: '18',
+                color: 'white',
+                position: 'topCenter',
+                timeout: 30000,
+                title: 'Success',
+                message: message,
+
+            });
+            //console.log(response.message);
+
+        }
     })
     const env = '{{env('APP_ENV')}}'
     var base_url = ''
@@ -184,8 +235,29 @@
 
 
                                 <button type="button" class="btn btn-primary mr-2" onclick="saveTransaction()">Confirm</button>
-                                <button type="button" class="btn btn-danger" onclick="passTransaction()">Pass</button>
+                                <button type="button" class="btn btn-warning" onclick="passTransaction()">Pass</button>
+                                <button type="button" class="btn btn-danger" onclick="errorTransaction()">Error</button>
                             </form>
+                            <div class="modal fade" id="error_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel-2" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel-2">Error Message</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                         <label for="exampleTextarea1">Error Message</label>
+                                        <textarea class="form-control" id="error_message" rows="4"></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-success" onclick="submitError()">Submit</button>
+                                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>`)
@@ -411,6 +483,38 @@
 
                 }
                 fetchAllTransaction()
+            })
+            .catch(err => console.log(err));
+
+    }
+    errorTransaction = () => {
+        $("#error_modal").modal('show')
+    }
+    submitError = () => {
+        var formData = new FormData()
+        formData.append('transactionId', transactionId)
+        formData.append('error_message', $("#error_message").val())
+
+        axios.post(base_url + '/api/saveErrorTransaction', formData, config)
+            .then(res => {
+                const {
+                    status,
+                    data
+                } = res.data
+
+                if (status == true) {
+                    $("#error_modal").hide()
+                    location.reload();
+                    sessionStorage.setItem('success', true);
+                    sessionStorage.setItem('message', 'Error saved successfully');
+                }
+                else {
+                    location.reload();
+                    sessionStorage.setItem('error', true);
+                    sessionStorage.setItem('message', 'Something error occured');
+                 }
+
+
             })
             .catch(err => console.log(err));
 
