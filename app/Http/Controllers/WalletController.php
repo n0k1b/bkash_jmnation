@@ -85,7 +85,7 @@ class WalletController extends Controller
             })
 
             ->addColumn('document', function ($data) {
-                $link = '<a href="storage/' . $data->document . '">File</a>';
+                $link = '<a href="storage/app/public/' . $data->document . '">File</a>';
                 return $link;
 
             })
