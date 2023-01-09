@@ -23,7 +23,7 @@
                     <div class="col-lg-4 mx-auto">
                         <div class="auth-form-light text-left p-5">
                             <div class="brand-logo" style="text-align: center;">
-                                <img src="{{asset('assets/melody')}}/images/logo.png" alt="logo">
+                                <img src="{{asset('public/assets/melody')}}/images/logo.png" alt="logo">
                             </div>
                             @if(\Session::has('error'))
                                 <div class="alert alert-danger">
