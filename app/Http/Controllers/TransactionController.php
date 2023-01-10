@@ -312,10 +312,10 @@ class TransactionController extends Controller
                     $data = transaction::where('agent_id', Auth::user()->id)->whereBetween('created_at', [$start_date, $end_date])->latest()->get(['*']);
                 }
             }
-            $total_cost = $data->sum('amount');
-            $total_service_charge = $data->sum('service_charge');
-            $total_agent_profit = $data->sum('agent_profit');
-            $total_admin_profit = $data->sum('admin_profit');
+            $total_cost = $data->where('status', '!=', 'error')->sum('amount');
+            $total_service_charge = $data->where('status', '!=', 'error')->sum('service_charge');
+            $total_agent_profit = $data->where('status', '!=', 'error')->sum('agent_profit');
+            $total_admin_profit = $data->where('status', '!=', 'error')->sum('admin_profit');
             if (sizeof($data) > 0) {
                 $data[0]['total_cost'] = round($total_cost, 2);
                 $data[0]['total_service_charge'] = round($total_service_charge, 2);

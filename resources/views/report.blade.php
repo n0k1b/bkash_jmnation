@@ -13,6 +13,10 @@
     table.dataTable thead .sorting_asc {
         background-image: none !important;
     }
+    .redClass{
+        color:red;
+        font-weight: bold;
+    }
 </style>
 @if(auth()->user()->role =='admin')
 <div class="row">
@@ -334,6 +338,12 @@
                 }
 
 
+            },
+            createdRow: function( row, data, dataIndex){
+                console.log(data['status'])
+                if( data['status'] ==  'error'){
+                    $(row).addClass('redClass');
+                }
             },
             deferRender: true,
             columns: [
