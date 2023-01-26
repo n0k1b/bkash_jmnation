@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TransactionEvent;
 use App\Models\transaction;
 use App\Models\TransactionMapAgent;
 use App\Models\User;
@@ -76,6 +77,7 @@ class TransactionController extends Controller
             $transaction->mobile_number = $request->mobile_number;
             $transaction->service_charge = $request->service_charge ?: null;
             $transaction->save();
+            event(new TransactionEvent());
 
             return back()->withSuccess("Transaction Created Successfully!");
             //return view('transaction-reseller', compact($transaction));
@@ -128,11 +130,6 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function test()
-    {
-        return 'hello';
     }
 
     public function getPassTranasction()
@@ -243,6 +240,7 @@ class TransactionController extends Controller
             $reseller = User::find($transaction->reseller_id);
             $reseller->wallet = $reseller->wallet - $transaction->amount;
             $reseller->save();
+            event(new TransactionEvent());
 
             return $this->successJsonResponse("Transaction Information Updated!", $transaction);
         } catch (Throwable $th) {
@@ -359,5 +357,21 @@ class TransactionController extends Controller
         }
         $transaction->delete();
         return response()->json(['message' => 'Transaction deleted successfully', 'status' => true]);
+    }
+
+    public function test()
+    {
+        event(new TransactionEvent());
+    }
+
+    public function general_notification_count()
+    {
+        $data = 0;
+        if (auth()->user()->role == 'reseller') {
+            $data = transaction::where('reseller_id', auth()->user()->id)->where('status', 'pending')->count();
+        } else if (auth()->user()->role == 'agent') {
+            $data = transaction::where('status', 'pending')->count();
+        }
+        return $data;
     }
 }

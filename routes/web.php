@@ -36,5 +36,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('delete_transaction', 'TransactionController@deleteTransaction');
     Route::get('user/{type}', 'UserController@index');
     Route::get('user_active_status_update/{id}', 'UserController@user_active_status_update');
-
+    Route::get('general_notification_count', 'TransactionController@general_notification_count');
 });
+Route::get('test', 'TransactionController@test');

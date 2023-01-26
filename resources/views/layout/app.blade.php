@@ -94,10 +94,10 @@
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row default-layout-navbar">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo" href="index-2.html"><img src="{{asset('public/assets/melody')}}/images/logo.png"
+        <a class="navbar-brand brand-logo" href="{{'/'}}"><img src="{{asset('public/assets/melody')}}/images/logo.png"
             alt="logo" /></a>
-        <a class="navbar-brand brand-logo-mini" href="index-2.html"><img
-            src="{{asset('assets/melody')}}/images/logo.png" alt="logo" /></a>
+        <a class="navbar-brand brand-logo-mini" href="{{'/'}}"><img
+            src="{{asset('public/assets/melody')}}/images/logo.png" alt="logo" /></a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-stretch">
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -152,7 +152,9 @@
           <li class="nav-item nav-profile">
             <div class="nav-link">
               <div class="profile-name">
+              <div id="play-button">R</div>
                 <p class="name">
+
                   @if(auth()->user()->role =='admin')
                  Reseller Wallet: {{ auth()->user()->reseller_wallet }}</br>
                  Agent Wallet: {{ auth()->user()->agent_wallet }}
@@ -171,7 +173,7 @@
           <li class="nav-item">
             <a class="nav-link" href="{{url('/')}}">
               <i class="fa fa-puzzle-piece menu-icon"></i>
-              <span class="menu-title">Transaction</span>
+              <span class="menu-title">Transaction <span class="badge badge-danger general_notification_count"></span></span>
             </a>
           </li>
           @endif
@@ -205,6 +207,7 @@
             <a class="nav-link" href="{{url('wallet_request')}}">
               <i class="fa fa-home menu-icon"></i>
               <span class="menu-title">Wallet Request</span>
+
             </a>
           </li>
 
@@ -236,14 +239,52 @@
   <!-- Custom js for this page-->
   <script src="{{ asset('assets/melody') }}/js/dashboard.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <!-- <script src="{{ asset('js/app.js') }}" ></script> -->
+  <audio id="notification-sound" src="{{asset('storage/sound/notification.mp3')}}" autoplay="true"
+    muted="muted" ></audio>
+  <script src="{{ asset('js/app.js') }}" ></script>
 
+
+  <script>
+
+//    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// const sound = new Audio('storage/sound/notification.mp3');
+// const source = audioCtx.createMediaElementSource(sound);
+// source.connect(audioCtx.destination);
+
+
+    var a = Echo.channel('events')
+    .listen('TransactionEvent', (e) => {
+      console.log('hello')
+
+
+  });
+  </script>
+
+  <script>
+    $(function(){
+      general_notification_count()
+    })
+    function general_notification_count()
+  {
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: '/general_notification_count',
+        success: function(data){
+        $('.general_notification_count').text(data)
+
+        }
+    });
+
+  }
+  </script>
 
   <!-- End custom js for this page-->
   <!-- Custom js for this page-->
   @yield('js')
   <!-- End custom js for this page-->
 </body>
+
 
 
 </html>
