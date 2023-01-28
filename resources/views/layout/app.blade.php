@@ -92,14 +92,14 @@
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row default-layout-navbar">
-      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row default-layout-navbar no-print">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center no-print">
         <a class="navbar-brand brand-logo" href="{{'/'}}"><img src="{{asset('public/assets/melody')}}/images/logo.png"
             alt="logo" /></a>
         <a class="navbar-brand brand-logo-mini" href="{{'/'}}"><img
             src="{{asset('public/assets/melody')}}/images/logo.png" alt="logo" /></a>
       </div>
-      <div class="navbar-menu-wrapper d-flex align-items-stretch">
+      <div class="navbar-menu-wrapper d-flex align-items-stretch no-print">
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
           <span class="fas fa-bars"></span>
         </button>
@@ -147,12 +147,12 @@
       </div>
       <!-- partial -->
       <!-- partial:partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+      <nav class="sidebar sidebar-offcanvas no-print" id="sidebar" >
         <ul class="nav">
           <li class="nav-item nav-profile">
             <div class="nav-link">
               <div class="profile-name">
-              <div id="play-button">R</div>
+              <div id="play-button"></div>
                 <p class="name">
 
                   @if(auth()->user()->role =='admin')
@@ -199,7 +199,7 @@
           <li class="nav-item">
             <a class="nav-link" href="{{url('report')}}">
               <i class="fa fa-home menu-icon"></i>
-              <span class="menu-title">Report</span>
+              <span class="menu-title">Report  @if(auth()->user()->role == 'admin')<span class="badge badge-danger general_notification_count"></span>@endif</span>
             </a>
           </li>
 

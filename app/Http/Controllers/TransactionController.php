@@ -229,6 +229,7 @@ class TransactionController extends Controller
             $admin_profit = (($transaction->amount * 0.004) * 0.5) + ($transaction->amount * 0.025);
             $transaction->agent_profit = $agent_profit;
             $transaction->admin_profit = $admin_profit;
+            $transaction->transaction_date = Carbon::now()->setTimezone('Asia/Dhaka');
             $transaction->save();
             TransactionMapAgent::where('transaction_id', $transactionId)->where('agent_id', $userId)->update([
                 'status' => 'complete',
@@ -359,9 +360,10 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction deleted successfully', 'status' => true]);
     }
 
-    public function test()
+    public function invoice($invoiceId)
     {
-        event(new TransactionEvent());
+        $data = transaction::find($invoiceId);
+        return view('invoice', compact('data'));
     }
 
     public function general_notification_count()
@@ -370,6 +372,8 @@ class TransactionController extends Controller
         if (auth()->user()->role == 'reseller') {
             $data = transaction::where('reseller_id', auth()->user()->id)->where('status', 'pending')->count();
         } else if (auth()->user()->role == 'agent') {
+            $data = transaction::where('status', 'pending')->count();
+        } else if (auth()->user()->role == 'admin') {
             $data = transaction::where('status', 'pending')->count();
         }
         return $data;

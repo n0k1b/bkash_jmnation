@@ -100,6 +100,7 @@
                                             <th>Last Digit</th>
                                             <th>Status</th>
                                             <th></th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -120,7 +121,11 @@
                                                     <i class="fas fa-trash text-danger"></i>
                                                 </button>
                                                 @endif
+                                                @if($t->status == 'complete')
+                                            <a class="btn btn-success" href="invoice/{{ $t->id }}" target="_blank"> Invoice</a>
+                                            @endif
                                             </td>
+
                                         </tr>
                                         @endforeach
 
