@@ -32,6 +32,13 @@
                                     </ul>
                                 </div>
                             @endif
+                            @if(\Session::has('success'))
+                            <div class="alert alert-success">
+                                <ul>
+                                    <li>{!! \Session::get('success') !!}</li>
+                                </ul>
+                            </div>
+                            @endif
 
                             <form class="pt-3" action="{{ route('login') }}" method="POST">
                                 @csrf

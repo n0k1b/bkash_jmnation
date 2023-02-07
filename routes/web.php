@@ -37,5 +37,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('user/{type}', 'UserController@index');
     Route::get('user_active_status_update/{id}', 'UserController@user_active_status_update');
     Route::get('general_notification_count', 'TransactionController@general_notification_count');
+    Route::get('change_password', 'UserController@change_password');
+    Route::get('change_pin', 'UserController@change_pin');
+    Route::post('update_password', 'UserController@update_password')->name('update_password');
+    Route::post('update_pin', 'UserController@update_pin')->name('update_pin');
+
 });
 Route::get('invoice/{invoiceId}', 'TransactionController@invoice');

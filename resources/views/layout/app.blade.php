@@ -211,6 +211,22 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('change_password')}}">
+              <i class="fa fa-home menu-icon"></i>
+              <span class="menu-title">Change Password</span>
+
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('change_pin')}}">
+              <i class="fa fa-home menu-icon"></i>
+              <span class="menu-title">Change Pin</span>
+
+            </a>
+          </li>
+
 
 
 
