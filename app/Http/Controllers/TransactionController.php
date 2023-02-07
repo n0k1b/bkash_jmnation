@@ -78,7 +78,7 @@ class TransactionController extends Controller
             $transaction->service_charge = $request->service_charge ?: null;
             $transaction->save();
             event(new TransactionEvent());
-
+            $this->send_message();
             return back()->withSuccess("Transaction Created Successfully!");
             //return view('transaction-reseller', compact($transaction));
 
@@ -378,4 +378,50 @@ class TransactionController extends Controller
         }
         return $data;
     }
+
+    public function send_message()
+    {
+        $mobile_numbers = ['8801845318609,8801886318609'];
+
+        $url = "http://g.dianasms.com/smsapi";
+        $data = [
+            "api_key" => "C200034363dd56240c1351.59351193",
+            "type" => "text",
+            "contacts" => "8801908376350",
+            "senderid" => "8809601001329",
+            "msg" => "You have one transaction srequest",
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        Log::info($response);
+        curl_close($ch);
+
+        //return $response;
+
+    }
+
+    // function send_sms() {
+    //     $url = "http://g.dianasms.com/smsapi";
+    //     $data = [
+    //       "api_key" => "your_api-key",
+    //       "type" => "{content type}",
+    //       "contacts" => "88017xxxxxxxx+88018xxxxxxxx"
+    //       "senderid" => "{sender id}",
+    //       "msg" => "{your message}",
+    //     ];
+    //     $ch = curl_init();
+    //     curl_setopt($ch, CURLOPT_URL, $url);
+    //     curl_setopt($ch, CURLOPT_POST, 1);
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     $response = curl_exec($ch);
+    //     curl_close($ch);
+    //     return $response;
+    //   }
 }
