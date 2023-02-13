@@ -21,7 +21,7 @@
         <div class="card" >
             <div class="card-header">
             <img src="{{asset('public/assets/melody')}}/images/logo.png"
-            alt="logo" />
+            alt="logo" height="50px" />
             </div>
             <div class="card-body">
             <div class="table-responsive">
